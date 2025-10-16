@@ -3,197 +3,175 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Keshava Jewellers - Estimation Slip</title>
+<title>Keshava Jewellers - Estimation Form</title>
 <style>
-body {
-  font-family: "Inter", sans-serif;
-  background-color: #f3f4f6;
-  margin:0; padding:0;
-}
-.container {
-  max-width:700px;
-  margin:40px auto;
-  background:#fff;
-  padding:30px;
-  border-radius:10px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.1);
-}
-.logo { text-align:center; margin-bottom:10px; }
-.logo img { width:100px; height:auto; }
-h1,h3 { text-align:center; margin:0; }
-h1 { color:#222; }
-h3 { margin-bottom:25px; color:#444; }
-label { display:block; margin-bottom:5px; font-weight:500; color:#333; }
+body { font-family: "Inter", sans-serif; background:#f3f4f6; margin:0; padding:0; }
+.container { max-width:700px; margin:40px auto; background:#fff; padding:30px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1); text-align:center; }
+.logo img { width:100px; }
 input, select { width:100%; padding:10px; margin-bottom:15px; border:1px solid #ccc; border-radius:5px; font-size:15px; }
-.radio-group { display:flex; gap:20px; margin-bottom:20px; }
-.radio-group label { font-weight:400; }
-.btn-container { display:flex; justify-content:space-between; }
-button { width:48%; padding:12px; border:none; border-radius:5px; font-size:16px; cursor:pointer; transition:0.3s; }
+.radio-group { display:flex; gap:15px; justify-content:center; margin-bottom:15px; }
+button { width:48%; padding:12px; border:none; border-radius:5px; font-size:16px; cursor:pointer; position:relative; }
 .save-btn { background-color:#4f46e5; color:white; }
-.save-btn:hover { background-color:#4338ca; }
-#printBtn { background-color:gray; opacity:0.6; cursor:not-allowed; color:white; }
+.save-btn:hover { background:#4338ca; }
+#printBtn { background-color:gray; opacity:0.6; cursor:not-allowed; }
 #printBtn.active { background-color:#007bff; opacity:1; cursor:pointer; }
+.saving-text { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:14px; font-weight:bold; color:white; display:none; }
 
-/* Print Layout */
+/* Print layout */
 @media print {
-  body { background:white; margin:0; text-align:center; }
-  .container { width:80mm; padding:10px; margin:0; box-shadow:none; border-radius:0; text-align:left; }
-  h1 { font-size:16px; margin-bottom:5px; }
-  h3 { font-size:13px; margin-bottom:8px; }
-  .btn-container, .radio-group, input, select { display:none; }
-  .logo img { width:60px; margin:0 auto 5px; display:block; }
-  .print-row { display:flex; justify-content:space-between; margin-bottom:5px; font-size:12px; }
+  body { background:white; margin:0; }
+  .container { width:80mm; padding:10px; margin:0; box-shadow:none; border-radius:0; text-align:center; }
+  input, select, label { font-size:12px; width:100%; border:none; padding:2px 0; text-align:center; }
+  .radio-group, .btn-container { display:none; }
+  .logo img { width:50px; }
   @page { size:80mm auto; margin:3mm; }
 }
 </style>
 </head>
 <body>
+
 <div class="container">
-  <div class="logo">
-    <img src="kc.png" alt="Keshava Jewellers Logo">
-  </div>
+  <div class="logo"><img src="kc.png" alt="Logo"></div>
   <h1>Keshava Jewellers, Sagara</h1>
   <h3>Estimation Slip</h3>
+
   <form id="estimationForm">
+    <label>Employee Name*</label>
+    <select id="employeeName"><option value="Sudhamsha">Sudhamsha</option><option value="Samarth">Samarth</option></select>
+
     <label>Customer Name*</label>
     <input type="text" id="customerName" required>
+
     <label>Mobile Number</label>
-    <input type="text" id="mobileNumber" maxlength="10" pattern="[0-9]{10}">
+    <input type="text" id="mobileNumber">
+
     <label>City</label>
     <input type="text" id="city">
+
+    <label>PAN Number (Optional)</label>
+    <input type="text" id="panNumber" placeholder="Enter PAN if provided">
+
     <label>Ornament Chosen</label>
     <input type="text" id="ornament">
+
     <label>Quantity (gms)</label>
     <input type="number" id="quantity" step="0.01">
-    <label>Rate (₹/gm)</label>
+
+    <label>Rate (per gm)</label>
     <input type="number" id="rate" step="0.01">
+
     <div class="radio-group">
       <label><input type="radio" name="mcType" value="grams" checked> MC in grams</label>
       <label><input type="radio" name="mcType" value="percent"> MC in %</label>
     </div>
+
     <label>Making Charges</label>
     <input type="number" id="makingCharges" step="0.01">
+
     <label>Stone Charges</label>
     <input type="number" id="stoneCharges" step="0.01">
-    <label>Employee Name</label>
-    <select id="employee">
-      <option value="Sudhamsha">Sudhamsha</option>
-      <option value="Samarth">Samarth</option>
-    </select>
-    <label>Total Amount (Auto Calculated)</label>
+
+    <label>Total Amount</label>
     <input type="text" id="amount" readonly style="background:#f9fafb;font-weight:bold;">
+
     <div class="btn-container">
-      <button type="button" class="save-btn" id="saveBtn">Save</button>
+      <button type="button" class="save-btn" id="saveBtn">Save<span class="saving-text" id="savingText">Saving...</span></button>
       <button type="button" id="printBtn" disabled>Print</button>
     </div>
   </form>
 </div>
 
 <script>
-const qtyEl = document.getElementById("quantity");
-const rateEl = document.getElementById("rate");
-const mcEl = document.getElementById("makingCharges");
-const stoneEl = document.getElementById("stoneCharges");
-const amountEl = document.getElementById("amount");
-const mcRadios = document.getElementsByName("mcType");
-const saveBtn = document.getElementById("saveBtn");
-const printBtn = document.getElementById("printBtn");
+const quantity = document.getElementById("quantity");
+const rate = document.getElementById("rate");
+const makingCharges = document.getElementById("makingCharges");
+const stoneCharges = document.getElementById("stoneCharges");
+const amount = document.getElementById("amount");
+const mcTypeRadios = document.getElementsByName("mcType");
 
-// Calculation
 function calculateTotal() {
-  const qty = parseFloat(qtyEl.value)||0;
-  const rate = parseFloat(rateEl.value)||0;
-  const mc = parseFloat(mcEl.value)||0;
-  const stone = parseFloat(stoneEl.value)||0;
-  const mcType = [...mcRadios].find(r=>r.checked)?.value;
+  const qty = parseFloat(quantity.value)||0;
+  const rt = parseFloat(rate.value)||0;
+  const mc = parseFloat(makingCharges.value)||0;
+  const stone = parseFloat(stoneCharges.value)||0;
+  const mcType = [...mcTypeRadios].find(r=>r.checked)?.value;
+
   let total=0;
-  if(mcType==="grams") total = (((qty+mc)*rate)+stone)*1.03;
-  else total = (((qty+(qty*(mc/100)))*rate)+stone)*1.03;
-  amountEl.value = total? total.toFixed(2):"";
+  if(mcType==="grams") total = (((qty+mc)*rt)+stone)*1.03;
+  else total = (((qty + (qty*(mc/100)))*rt)+stone)*1.03;
+
+  amount.value = total.toFixed(2);
 }
+[quantity,rate,makingCharges,stoneCharges].forEach(el=>el.addEventListener("input",calculateTotal));
+mcTypeRadios.forEach(r=>r.addEventListener("change",calculateTotal));
 
-[qtyEl, rateEl, mcEl, stoneEl].forEach(el=>el.addEventListener("input", calculateTotal));
-mcRadios.forEach(r=>r.addEventListener("change", calculateTotal));
+// Buttons
+const saveBtn=document.getElementById("saveBtn");
+const savingText=document.getElementById("savingText");
+const printBtn=document.getElementById("printBtn");
 
-// Save
-saveBtn.addEventListener("click", ()=>{
-  const data = {
-    customerName: document.getElementById("customerName").value.trim(),
-    mobileNumber: document.getElementById("mobileNumber").value.trim(),
-    city: document.getElementById("city").value.trim(),
-    ornament: document.getElementById("ornament").value.trim(),
-    quantity: qtyEl.value,
-    rate: rateEl.value,
-    mcType: [...mcRadios].find(r=>r.checked)?.value,
-    makingCharges: mcEl.value,
-    stoneCharges: stoneEl.value,
-    employee: document.getElementById("employee").value,
-    amount: amountEl.value
+function generateUniqueID(){ return "EST-"+Date.now(); }
+
+saveBtn.addEventListener("click",()=>{
+  const data={
+    employeeName: document.getElementById("employeeName").value,
+    customerName: document.getElementById("customerName").value,
+    mobileNumber: document.getElementById("mobileNumber").value,
+    city: document.getElementById("city").value,
+    panNumber: document.getElementById("panNumber").value,
+    ornament: document.getElementById("ornament").value,
+    quantity: quantity.value,
+    rate: rate.value,
+    mcType: [...mcTypeRadios].find(r=>r.checked)?.value,
+    makingCharges: makingCharges.value,
+    stoneCharges: stoneCharges.value,
+    amount: parseFloat(amount.value)
   };
-  if(!data.customerName){ alert("Customer Name is mandatory!"); return;}
 
-  // Change button text to Saving
-  const originalText = saveBtn.textContent;
-  saveBtn.textContent = "Saving...";
-  saveBtn.disabled = true;
+  if(!data.customerName){ alert("Customer Name is mandatory!"); return; }
 
+  saveBtn.disabled=true; savingText.style.display="block";
+
+  // Split logic
+  const MAX=199000;
+  let remaining=data.amount;
+  let baseID=generateUniqueID();
+  const splitEntries=[];
+  if(remaining<=MAX || data.panNumber){
+    splitEntries.push({...data, estimationID:baseID});
+  } else {
+    let i=0;
+    while(remaining>0){
+      let entryAmt=remaining>MAX?MAX:remaining;
+      splitEntries.push({
+        ...data,
+        amount:entryAmt,
+        estimationID:baseID+"-"+(i+1),
+        panRequired: entryAmt>=MAX
+      });
+      remaining-=entryAmt;
+      i++;
+    }
+  }
+
+  // Send to Google Sheet Web App
   const scriptURL="https://script.google.com/macros/s/AKfycbzVpwpYkrB-fa65HM-VqvESom7E2VSaKUt_4w8guvRyRKkSx_ueawWdnWMGhUpEhtLDyQ/exec";
-  fetch(scriptURL,{method:"POST",body:JSON.stringify(data)})
-    .then(res=>{
-      if(res.ok){
-        setTimeout(()=>{
-          alert("Saved successfully!");
-          saveBtn.textContent = originalText; // restore text
-          saveBtn.disabled = false;
-          printBtn.disabled=false;
-          printBtn.classList.add("active");
-        }, 800);
-      } else throw "Error";
-    })
-    .catch(()=>{
-      alert("Error saving data!");
-      saveBtn.textContent = originalText; // restore text
-      saveBtn.disabled = false;
-    });
+  fetch(scriptURL, {method:"POST", body:JSON.stringify({entries:splitEntries})})
+  .then(r=>{
+    alert("Saved successfully!");
+    saveBtn.style.display="none";
+    savingText.style.display="none";
+    printBtn.disabled=false; printBtn.classList.add("active");
+  })
+  .catch(err=>{alert("Error saving!"); saveBtn.disabled=false; savingText.style.display="none"; console.error(err);});
 });
 
-// Print + Auto-clear
-printBtn.addEventListener("click", ()=>{
-  if(printBtn.disabled){ alert("Please save before printing!"); return; }
-  const formData = {
-    "Customer Name": document.getElementById("customerName").value,
-    "Mobile": document.getElementById("mobileNumber").value,
-    "City": document.getElementById("city").value,
-    "Ornament": document.getElementById("ornament").value,
-    "Quantity (gms)": qtyEl.value,
-    "Rate (₹/gm)": rateEl.value,
-    "MC Type": [...mcRadios].find(r=>r.checked)?.value,
-    "Making Charges": mcEl.value,
-    "Stone Charges": stoneEl.value,
-    "Employee": document.getElementById("employee").value,
-    "Total Amount": amountEl.value
-  };
-  let printWindow = window.open('', '', 'height=600,width=400');
-  printWindow.document.write('<html><head><title>Estimation Slip</title><style>');
-  printWindow.document.write('body{text-align:center;font-family:Inter,sans-serif;} .print-row{display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px;}');
-  printWindow.document.write('h1,h3{text-align:center;margin:0;} h1{font-size:16px;} h3{font-size:13px;margin-bottom:8px;}');
-  printWindow.document.write('</style></head><body>');
-  printWindow.document.write('<h1>Keshava Jewellers</h1><h3>Estimation Slip</h3>');
-  printWindow.document.write('<img src="kc.png" style="width:60px;margin:5px auto;display:block;">');
-  for(const key in formData){
-    printWindow.document.write(`<div class="print-row"><span>${key}</span><span>${formData[key]}</span></div>`);
-  }
-  printWindow.document.write('</body></html>');
-  printWindow.document.close();
-  printWindow.focus();
-  printWindow.print();
-  printWindow.close();
-
-  // Auto-clear form
+// Print
+printBtn.addEventListener("click",()=>{
+  window.print();
   document.getElementById("estimationForm").reset();
-  amountEl.value="";
-  printBtn.disabled=true;
-  printBtn.classList.remove("active");
+  printBtn.disabled=true; printBtn.classList.remove("active");
+  saveBtn.style.display="inline-block"; saveBtn.disabled=false;
 });
 </script>
 </body>
