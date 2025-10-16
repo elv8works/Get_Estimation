@@ -8,52 +8,50 @@
 body {
   font-family: "Inter", sans-serif;
   background-color: #f3f4f6;
-  margin: 0;
-  padding: 0;
+  margin:0; padding:0;
 }
 .container {
-  max-width: 700px;
-  margin: 40px auto;
-  background: #fff;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  max-width:700px;
+  margin:40px auto;
+  background:#fff;
+  padding:30px;
+  border-radius:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
 }
-.logo {
-  text-align: center;
-  margin-bottom: 10px;
+.logo { text-align:center; margin-bottom:10px; }
+.logo img { width:100px; height:auto; }
+h1,h3 { text-align:center; margin:0; }
+h1 { color:#222; }
+h3 { margin-bottom:25px; color:#444; }
+label { display:block; margin-bottom:5px; font-weight:500; color:#333; }
+input, select { width:100%; padding:10px; margin-bottom:15px; border:1px solid #ccc; border-radius:5px; font-size:15px; }
+.radio-group { display:flex; gap:20px; margin-bottom:20px; }
+.radio-group label { font-weight:400; }
+.btn-container { display:flex; justify-content:space-between; }
+button { width:48%; padding:12px; border:none; border-radius:5px; font-size:16px; cursor:pointer; transition:0.3s; }
+.save-btn { background-color:#4f46e5; color:white; position:relative; }
+.save-btn:hover { background-color:#4338ca; }
+.save-btn.saving { background-color:#4f46e5; color:white; cursor:default; }
+.save-btn.saving::after {
+  content:'Saving...';
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
 }
-.logo img {
-  width: 100px;
-  height: auto;
-}
-h1, h3 {
-  text-align: center;
-  margin: 0;
-}
-h1 { color: #222; }
-h3 { margin-bottom: 25px; color: #444; }
-label { display: block; margin-bottom: 5px; font-weight: 500; color: #333; }
-input, select { width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px; font-size: 15px; }
-.radio-group { display: flex; gap: 20px; margin-bottom: 20px; }
-.radio-group label { font-weight: 400; }
-.btn-container { display: flex; justify-content: space-between; }
-button { width: 48%; padding: 12px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; transition: 0.3s; }
-.save-btn { background-color: #4f46e5; color: white; }
-.save-btn:hover { background-color: #4338ca; }
-#printBtn { background-color: gray; opacity: 0.6; cursor: not-allowed; color: white; }
-#printBtn.active { background-color: #007bff; opacity: 1; cursor: pointer; }
-/* Print layout */
+#printBtn { background-color:gray; opacity:0.6; cursor:not-allowed; color:white; }
+#printBtn.active { background-color:#007bff; opacity:1; cursor:pointer; }
+
+/* Print Layout */
 @media print {
-  body { background: white; margin: 0; text-align: center; }
-  .container { width: 50mm; padding: 10px; margin: 0; box-shadow: none; border-radius: 0; }
-  h1 { font-size: 16px; margin-bottom: 5px; }
-  h3 { font-size: 13px; margin-bottom: 8px; }
-  label { font-weight: bold; font-size: 12px; margin-bottom: 2px; display: inline-block; text-align: left; width: 100%; }
-  input, select { border: none; padding: 2px 0; font-size: 12px; text-align: right; }
-  .btn-container, .radio-group { display: none; }
-  .logo img { width: 60px; }
-  @page { size: 80mm auto; margin: 3mm; }
+  body { background:white; margin:0; text-align:center; }
+  .container { width:80mm; padding:10px; margin:0; box-shadow:none; border-radius:0; text-align:left; }
+  h1 { font-size:16px; margin-bottom:5px; }
+  h3 { font-size:13px; margin-bottom:8px; }
+  .btn-container, .radio-group, input, select { display:none; }
+  .logo img { width:60px; margin:0 auto 5px; display:block; }
+  .print-row { display:flex; justify-content:space-between; margin-bottom:5px; font-size:12px; }
+  @page { size:80mm auto; margin:3mm; }
 }
 </style>
 </head>
@@ -63,7 +61,7 @@ button { width: 48%; padding: 12px; border: none; border-radius: 5px; font-size:
     <img src="kc.png" alt="Keshava Jewellers Logo">
   </div>
   <h1>Keshava Jewellers, Sagara</h1>
-  <h3>Estimation Slip</h3>
+  <h3>Cost Estimation Slip</h3>
   <form id="estimationForm">
     <label>Customer Name*</label>
     <input type="text" id="customerName" required>
@@ -90,7 +88,7 @@ button { width: 48%; padding: 12px; border: none; border-radius: 5px; font-size:
       <option value="Sudhamsha">Sudhamsha</option>
       <option value="Samarth">Samarth</option>
     </select>
-    <label>Total Amount (Auto Calculated)</label>
+    <label>Total Estimated Cost</label>
     <input type="text" id="amount" readonly style="background:#f9fafb;font-weight:bold;">
     <div class="btn-container">
       <button type="button" class="save-btn" id="saveBtn">Save</button>
@@ -98,6 +96,7 @@ button { width: 48%; padding: 12px; border: none; border-radius: 5px; font-size:
     </div>
   </form>
 </div>
+
 <script>
 const qtyEl = document.getElementById("quantity");
 const rateEl = document.getElementById("rate");
@@ -140,19 +139,68 @@ saveBtn.addEventListener("click", ()=>{
     amount: amountEl.value
   };
   if(!data.customerName){ alert("Customer Name is mandatory!"); return;}
+
+  // Show Saving animation
+  saveBtn.classList.add("saving");
+  saveBtn.disabled = true;
+
   const scriptURL="https://script.google.com/macros/s/AKfycbzVpwpYkrB-fa65HM-VqvESom7E2VSaKUt_4w8guvRyRKkSx_ueawWdnWMGhUpEhtLDyQ/exec";
   fetch(scriptURL,{method:"POST",body:JSON.stringify(data)})
     .then(res=>{
-      if(res.ok){ alert("Saved successfully!"); printBtn.disabled=false; printBtn.classList.add("active"); }
-      else alert("Error saving data!");
+      if(res.ok){
+        setTimeout(()=>{
+          alert("Saved successfully!");
+          saveBtn.classList.remove("saving");
+          saveBtn.disabled = false;
+          printBtn.disabled=false;
+          printBtn.classList.add("active");
+        }, 1000); // small delay for animation
+      } else throw "Error";
     })
-    .catch(()=>alert("Error saving data!"));
+    .catch(()=>{
+      alert("Error saving data!");
+      saveBtn.classList.remove("saving");
+      saveBtn.disabled = false;
+    });
 });
 
-// Print
-printBtn.addEventListener("click",()=>{
+// Print + Auto-clear
+printBtn.addEventListener("click", ()=>{
   if(printBtn.disabled){ alert("Please save before printing!"); return; }
-  window.print();
+  const formData = {
+    "Customer Name": document.getElementById("customerName").value,
+    "Mobile": document.getElementById("mobileNumber").value,
+    "City": document.getElementById("city").value,
+    "Ornament": document.getElementById("ornament").value,
+    "Quantity (gms)": qtyEl.value,
+    "Rate (₹/gm)": rateEl.value,
+    "MC Type": [...mcRadios].find(r=>r.checked)?.value,
+    "Making Charges": mcEl.value,
+    "Stone Charges": stoneEl.value,
+    "Employee": document.getElementById("employee").value,
+    "Total Amount": amountEl.value
+  };
+  let printWindow = window.open('', '', 'height=600,width=400');
+  printWindow.document.write('<html><head><title>Estimation Slip</title><style>');
+  printWindow.document.write('body{text-align:center;font-family:Inter,sans-serif;} .print-row{display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px;}');
+  printWindow.document.write('h1,h3{text-align:center;margin:0;} h1{font-size:16px;} h3{font-size:13px;margin-bottom:8px;}');
+  printWindow.document.write('</style></head><body>');
+  printWindow.document.write('<h1>Keshava Jewellers</h1><h3>Estimation Slip</h3>');
+  printWindow.document.write('<img src="kc.png" style="width:60px;margin:5px auto;display:block;">');
+  for(const key in formData){
+    printWindow.document.write(`<div class="print-row"><span>${key}</span><span>${formData[key]}</span></div>`);
+  }
+  printWindow.document.write('</body></html>');
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+  printWindow.close();
+
+  // Auto-clear form
+  document.getElementById("estimationForm").reset();
+  amountEl.value="";
+  printBtn.disabled=true;
+  printBtn.classList.remove("active");
 });
 </script>
 </body>
