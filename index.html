@@ -6,16 +6,27 @@
 <title>Keshava Jewellers - Estimation Form</title>
 <style>
 body { font-family: "Inter", sans-serif; background:#f3f4f6; margin:0; padding:0; }
-.container { max-width:700px; margin:40px auto; background:#fff; padding:30px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1); text-align:center; }
+.container {
+  max-width:700px;
+  margin:40px auto;
+  background:#fff;
+  padding:30px;
+  border-radius:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+  text-align:left;
+}
+.logo { text-align:center; margin-bottom:15px; }
 .logo img { width:100px; }
-input, select { width:100%; padding:10px; margin-bottom:15px; border:1px solid #ccc; border-radius:5px; font-size:15px; }
-.radio-group { display:flex; gap:15px; justify-content:center; margin-bottom:15px; }
+h1,h3 { text-align:center; margin:5px 0; }
+label { display:block; margin-bottom:5px; font-weight:500; color:#333; }
+input, select { width:100%; padding:10px; margin-bottom:15px; border:1px solid #ccc; border-radius:5px; font-size:15px; text-align:left; }
+.radio-group { display:flex; gap:15px; justify-content:flex-start; margin-bottom:15px; }
 button { width:48%; padding:12px; border:none; border-radius:5px; font-size:16px; cursor:pointer; position:relative; }
 .save-btn { background-color:#4f46e5; color:white; }
 .save-btn:hover { background:#4338ca; }
 #printBtn { background-color:gray; opacity:0.6; cursor:not-allowed; }
 #printBtn.active { background-color:#007bff; opacity:1; cursor:pointer; }
-.saving-text { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:14px; font-weight:bold; color:white; display:none; }
+.saving-text { display:none; margin-left:10px; font-weight:bold; color:#4f46e5; }
 
 /* Print layout */
 @media print {
@@ -75,7 +86,8 @@ button { width:48%; padding:12px; border:none; border-radius:5px; font-size:16px
     <input type="text" id="amount" readonly style="background:#f9fafb;font-weight:bold;">
 
     <div class="btn-container">
-      <button type="button" class="save-btn" id="saveBtn">Save<span class="saving-text" id="savingText">Saving...</span></button>
+      <button type="button" class="save-btn" id="saveBtn">Save</button>
+      <span class="saving-text" id="savingText">Saving...</span>
       <button type="button" id="printBtn" disabled>Print</button>
     </div>
   </form>
@@ -89,6 +101,7 @@ const stoneCharges = document.getElementById("stoneCharges");
 const amount = document.getElementById("amount");
 const mcTypeRadios = document.getElementsByName("mcType");
 
+// Calculate total
 function calculateTotal() {
   const qty = parseFloat(quantity.value)||0;
   const rt = parseFloat(rate.value)||0;
@@ -102,6 +115,7 @@ function calculateTotal() {
 
   amount.value = total.toFixed(2);
 }
+
 [quantity,rate,makingCharges,stoneCharges].forEach(el=>el.addEventListener("input",calculateTotal));
 mcTypeRadios.forEach(r=>r.addEventListener("change",calculateTotal));
 
@@ -130,7 +144,7 @@ saveBtn.addEventListener("click",()=>{
 
   if(!data.customerName){ alert("Customer Name is mandatory!"); return; }
 
-  saveBtn.disabled=true; savingText.style.display="block";
+  saveBtn.disabled=true; savingText.style.display="inline";
 
   // Split logic
   const MAX=199000;
@@ -143,14 +157,8 @@ saveBtn.addEventListener("click",()=>{
     let i=0;
     while(remaining>0){
       let entryAmt=remaining>MAX?MAX:remaining;
-      splitEntries.push({
-        ...data,
-        amount:entryAmt,
-        estimationID:baseID+"-"+(i+1),
-        panRequired: entryAmt>=MAX
-      });
-      remaining-=entryAmt;
-      i++;
+      splitEntries.push({...data, amount:entryAmt, estimationID:baseID+"-"+(i+1)});
+      remaining-=entryAmt; i++;
     }
   }
 
@@ -158,12 +166,17 @@ saveBtn.addEventListener("click",()=>{
   const scriptURL="https://script.google.com/macros/s/AKfycbzVpwpYkrB-fa65HM-VqvESom7E2VSaKUt_4w8guvRyRKkSx_ueawWdnWMGhUpEhtLDyQ/exec";
   fetch(scriptURL, {method:"POST", body:JSON.stringify({entries:splitEntries})})
   .then(r=>{
-    alert("Saved successfully!");
-    saveBtn.style.display="none";
     savingText.style.display="none";
+    saveBtn.style.display="none";
     printBtn.disabled=false; printBtn.classList.add("active");
+    alert("Saved successfully!");
   })
-  .catch(err=>{alert("Error saving!"); saveBtn.disabled=false; savingText.style.display="none"; console.error(err);});
+  .catch(err=>{
+    alert("Error saving!"); 
+    saveBtn.disabled=false; 
+    savingText.style.display="none"; 
+    console.error(err);
+  });
 });
 
 // Print
@@ -174,5 +187,6 @@ printBtn.addEventListener("click",()=>{
   saveBtn.style.display="inline-block"; saveBtn.disabled=false;
 });
 </script>
+
 </body>
 </html>
