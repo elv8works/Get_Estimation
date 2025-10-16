@@ -29,16 +29,8 @@ input, select { width:100%; padding:10px; margin-bottom:15px; border:1px solid #
 .radio-group label { font-weight:400; }
 .btn-container { display:flex; justify-content:space-between; }
 button { width:48%; padding:12px; border:none; border-radius:5px; font-size:16px; cursor:pointer; transition:0.3s; }
-.save-btn { background-color:#4f46e5; color:white; position:relative; }
+.save-btn { background-color:#4f46e5; color:white; }
 .save-btn:hover { background-color:#4338ca; }
-.save-btn.saving { background-color:#4f46e5; color:white; cursor:default; }
-.save-btn.saving::after {
-  content:'Saving...';
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-}
 #printBtn { background-color:gray; opacity:0.6; cursor:not-allowed; color:white; }
 #printBtn.active { background-color:#007bff; opacity:1; cursor:pointer; }
 
@@ -61,7 +53,7 @@ button { width:48%; padding:12px; border:none; border-radius:5px; font-size:16px
     <img src="kc.png" alt="Keshava Jewellers Logo">
   </div>
   <h1>Keshava Jewellers, Sagara</h1>
-  <h3>Cost Estimation Slip</h3>
+  <h3>Estimation Slip</h3>
   <form id="estimationForm">
     <label>Customer Name*</label>
     <input type="text" id="customerName" required>
@@ -88,7 +80,7 @@ button { width:48%; padding:12px; border:none; border-radius:5px; font-size:16px
       <option value="Sudhamsha">Sudhamsha</option>
       <option value="Samarth">Samarth</option>
     </select>
-    <label>Total Estimated Cost</label>
+    <label>Total Amount (Auto Calculated)</label>
     <input type="text" id="amount" readonly style="background:#f9fafb;font-weight:bold;">
     <div class="btn-container">
       <button type="button" class="save-btn" id="saveBtn">Save</button>
@@ -140,8 +132,9 @@ saveBtn.addEventListener("click", ()=>{
   };
   if(!data.customerName){ alert("Customer Name is mandatory!"); return;}
 
-  // Show Saving animation
-  saveBtn.classList.add("saving");
+  // Change button text to Saving
+  const originalText = saveBtn.textContent;
+  saveBtn.textContent = "Saving...";
   saveBtn.disabled = true;
 
   const scriptURL="https://script.google.com/macros/s/AKfycbzVpwpYkrB-fa65HM-VqvESom7E2VSaKUt_4w8guvRyRKkSx_ueawWdnWMGhUpEhtLDyQ/exec";
@@ -150,16 +143,16 @@ saveBtn.addEventListener("click", ()=>{
       if(res.ok){
         setTimeout(()=>{
           alert("Saved successfully!");
-          saveBtn.classList.remove("saving");
+          saveBtn.textContent = originalText; // restore text
           saveBtn.disabled = false;
           printBtn.disabled=false;
           printBtn.classList.add("active");
-        }, 1000); // small delay for animation
+        }, 800);
       } else throw "Error";
     })
     .catch(()=>{
       alert("Error saving data!");
-      saveBtn.classList.remove("saving");
+      saveBtn.textContent = originalText; // restore text
       saveBtn.disabled = false;
     });
 });
