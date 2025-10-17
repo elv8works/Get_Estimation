@@ -5,58 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Keshava Jewellers - Employee Login</title>
 <style>
-body {
-  font-family: "Inter", sans-serif;
-  background: linear-gradient(135deg,#f8f0e3,#f3f4f6);
-  margin:0; display:flex; justify-content:center; align-items:center; height:100vh;
-}
-.container {
-  background:#fff; padding:40px; border-radius:20px;
-  box-shadow:0 12px 30px rgba(0,0,0,0.2); width:380px; text-align:center;
-  position:relative;
-}
-.container::before{
-  content:""; position:absolute; top:-10px; left:-10px; right:-10px; bottom:-10px;
-  border-radius:20px; background: linear-gradient(45deg,#4f46e5,#a855f7); z-index:-1;
-}
-h2 { color:#4f46e5; margin-bottom:25px; font-size:22px; }
-input { width:100%; padding:12px; margin:12px 0; border:1px solid #ccc; border-radius:10px; font-size:15px; }
-button {
-  width:100%; padding:12px; margin-top:15px; background:#4f46e5; color:white; border:none; border-radius:10px;
-  font-size:16px; cursor:pointer; position:relative; overflow:hidden; transition:0.3s;
-}
-button:disabled { background:gray; cursor:not-allowed; }
-button:hover:not(:disabled) { background:#4338ca; }
-button .loading { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); display:none; font-weight:bold; }
-.show-loading { pointer-events:none; color:transparent; }
-.show-loading .loading { display:block; color:white; }
-#recaptcha-container { margin-top:10px; }
+  body {
+    font-family: "Inter", sans-serif;
+    background: #f3f4f6;
+    margin: 0;
+    padding: 0;
+  }
+  .container {
+    max-width: 400px;
+    margin: 80px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    text-align: center;
+    position: relative;
+  }
+  .logo img { width: 100px; margin-bottom: 15px; }
+  h1 { font-size: 24px; margin-bottom: 5px; }
+  h3 { font-size: 16px; margin-bottom: 20px; color: #555; }
+  input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; font-size: 15px; }
+  button { width: 100%; padding: 12px; border: none; border-radius: 5px; font-size: 16px; background: #4f46e5; color: #fff; cursor: pointer; position: relative; }
+  button:hover { background: #4338ca; }
+  .login-text { display: inline-block; margin-left: 10px; font-weight: bold; color: #4f46e5; vertical-align: middle; display: none; }
 
-/* Footer branding */
-.footer { font-size:12px; color:#555; margin-top:15px; }
+  .error-msg { color: red; font-weight: bold; margin-bottom: 10px; display: none; }
+
 </style>
-</head>
-<body>
-
-<div class="container">
-  <h2>Keshava Jewellers - Employee Login</h2>
-
-  <input type="text" id="phoneNumber" placeholder="+91" value="+91">
-  <div id="recaptcha-container"></div>
-
-  <button id="getOtpBtn">Get OTP <span class="loading">Sending...</span></button>
-  <input type="text" id="otpInput" placeholder="Enter OTP" style="display:none;">
-  <button id="verifyOtpBtn" style="display:none;">Verify OTP <span class="loading">Verifying...</span></button>
-
-  <div class="footer">© Keshava Jewellers</div>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script>
-// Firebase config
-const firebaseConfig = {
+  // TODO: Replace the below config with your Firebase project config
+  const firebaseConfig = {
   apiKey: "AIzaSyDu5HrS1C-sL1mvTIpQ8Z_29l46SgmXugM",
   authDomain: "getestimation-e0978.firebaseapp.com",
   projectId: "getestimation-e0978",
@@ -65,69 +46,56 @@ const firebaseConfig = {
   appId: "1:305257891317:web:5b20c8e5121d0fbb9a0cbc",
   measurementId: "G-21C5H9BRQ7"
 };
+  firebase.initializeApp(firebaseConfig);
+</script>
+</head>
+<body>
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
+<div class="container">
+  <div class="logo"><img src="kc.png" alt="Logo"></div>
+  <h1>Keshava Jewellers</h1>
+  <h3>Employee Login</h3>
+  
+  <div class="error-msg" id="errorMsg"></div>
 
-// Registered employees mapping: phone → employee name
-const employeeMap = {
-  "+917975073574": "Sudhamsha",
-  "+918861609330": "Samarth"
-};
+  <input type="email" id="email" placeholder="Employee Email" required>
+  <input type="password" id="password" placeholder="Password" required>
+  <button id="loginBtn">Login<span class="login-text" id="loginText">Logging in...</span></button>
+</div>
 
-const phoneInput = document.getElementById("phoneNumber");
-const otpInput = document.getElementById("otpInput");
-const getOtpBtn = document.getElementById("getOtpBtn");
-const verifyOtpBtn = document.getElementById("verifyOtpBtn");
+<script>
+const loginBtn = document.getElementById("loginBtn");
+const loginText = document.getElementById("loginText");
+const errorMsg = document.getElementById("errorMsg");
 
-window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { size: 'invisible' });
-let confirmationResult;
-
-function showLoading(btn, show){
-  if(show) btn.classList.add("show-loading");
-  else btn.classList.remove("show-loading");
-}
-
-getOtpBtn.addEventListener("click", ()=>{
-  const phoneNumber = phoneInput.value.trim();
-  if(!(phoneNumber in employeeMap)){
-    alert("Your mobile number is not registered. Contact the employer.");
+loginBtn.addEventListener("click", () => {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  if(!email || !password){
+    errorMsg.style.display = "block";
+    errorMsg.innerText = "Please enter both email and password.";
     return;
   }
-  showLoading(getOtpBtn,true);
+  loginBtn.disabled = true;
+  loginText.style.display = "inline-block";
+  errorMsg.style.display = "none";
 
-  auth.signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
-  .then(result => {
-    confirmationResult = result;
-    alert("OTP sent to " + phoneNumber);
-    otpInput.style.display="block";
-    verifyOtpBtn.style.display="block";
-  })
-  .catch(err=>{
-    alert("Error sending OTP: " + err.message);
-  })
-  .finally(()=> showLoading(getOtpBtn,false));
-});
-
-verifyOtpBtn.addEventListener("click", ()=>{
-  const otp = otpInput.value.trim();
-  if(!otp) return alert("Enter OTP");
-  showLoading(verifyOtpBtn,true);
-
-  confirmationResult.confirm(otp)
-  .then(result=>{
-    const phone = result.user.phoneNumber;
-    const employeeName = employeeMap[phone];
-    // Save employee info and login time
-    sessionStorage.setItem("loggedInEmployee", employeeName);
-    sessionStorage.setItem("loginTime", Date.now());
-    window.location.href = "estimation.html";
-  })
-  .catch(err=>{
-    alert("Invalid OTP, try again!");
-  })
-  .finally(()=> showLoading(verifyOtpBtn,false));
+  firebase.auth().signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      // Save login details in localStorage
+      localStorage.setItem("employeeEmail", email);
+      localStorage.setItem("loginTime", Date.now());
+      window.location.href = "estimation.html";
+    })
+    .catch((error) => {
+      loginBtn.disabled = false;
+      loginText.style.display = "none";
+      errorMsg.style.display = "block";
+      errorMsg.innerText = "Invalid login! Contact employer.";
+      console.error(error);
+    });
 });
 </script>
+
 </body>
 </html>
