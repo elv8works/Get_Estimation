@@ -23,69 +23,22 @@ body {
 .logo img { width:100px; }
 h1,h3 { text-align:center; margin:5px 0; }
 
-label {
-  display:block;
-  margin-bottom:5px;
-  font-weight:500;
-  color:#333;
-}
-input, select {
-  width:100%;
-  padding:10px;
-  margin-bottom:15px;
-  border:1px solid #ccc;
-  border-radius:5px;
-  font-size:15px;
-  text-align:left;
-}
-.radio-group {
-  display:flex;
-  gap:15px;
-  justify-content:flex-start;
-  margin-bottom:15px;
-}
-button {
-  width:48%;
-  padding:12px;
-  border:none;
-  border-radius:5px;
-  font-size:16px;
-  cursor:pointer;
-  position:relative;
-}
+label { display:block; margin-bottom:5px; font-weight:500; color:#333; }
+input, select { width:100%; padding:10px; margin-bottom:15px; border:1px solid #ccc; border-radius:5px; font-size:15px; text-align:left; }
+.radio-group { display:flex; gap:15px; justify-content:flex-start; margin-bottom:15px; }
+button { width:48%; padding:12px; border:none; border-radius:5px; font-size:16px; cursor:pointer; position:relative; }
 .save-btn { background-color:#4f46e5; color:white; }
 .save-btn:hover { background:#4338ca; }
 #printBtn { background-color:gray; opacity:0.6; cursor:not-allowed; }
 #printBtn.active { background-color:#007bff; opacity:1; cursor:pointer; }
-.saving-text {
-  display:none;
-  font-weight:bold;
-  color:#4f46e5;
-  margin-left:10px;
-  vertical-align:middle;
-}
+.saving-text { display:none; font-weight:bold; color:#4f46e5; margin-left:10px; vertical-align:middle; }
 
 /* Print layout */
 @media print {
   body { background:white; margin:0; }
-  .container {
-    width:80mm;
-    padding:10px;
-    margin:0 auto;
-    box-shadow:none;
-    border-radius:0;
-    text-align:left;
-  }
-  .btn-container, .radio-group, input, select {
-    display:none !important;
-  }
-  .print-row {
-    display:flex;
-    justify-content:space-between;
-    font-size:12px;
-    border-bottom:1px dashed #ccc;
-    padding:2px 0;
-  }
+  .container { width:80mm; padding:10px; margin:0 auto; box-shadow:none; border-radius:0; text-align:left; }
+  .btn-container, .radio-group, input, select { display:none !important; }
+  .print-row { display:flex; justify-content:space-between; font-size:12px; border-bottom:1px dashed #ccc; padding:2px 0; }
   .logo img { width:50px; }
   h1,h3 { text-align:center; font-size:13px; margin:2px 0; }
   @page { size:80mm auto; margin:3mm; }
@@ -94,17 +47,14 @@ button {
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="estimationContainer">
   <div class="logo"><img src="kc.png" alt="Logo"></div>
   <h1>Keshava Jewellers, Sagara</h1>
   <h3>Estimation Slip</h3>
 
   <form id="estimationForm">
     <label>Employee Name*</label>
-    <select id="employeeName">
-      <option value="Sudhamsha">Sudhamsha</option>
-      <option value="Samarth">Samarth</option>
-    </select>
+    <input type="text" id="employeeName" readonly>
 
     <label>Customer Name*</label>
     <input type="text" id="customerName" required>
@@ -158,134 +108,122 @@ button {
 </div>
 
 <script>
-// ----- LOGIN RESTRICTION -----
-window.addEventListener("DOMContentLoaded", () => {
-  const employee = sessionStorage.getItem("loggedInEmployee");
-  const loginTime = parseInt(sessionStorage.getItem("loginTime"), 10);
-
-  if (!employee) {
-    alert("You are not logged in!");
+  // Restrict direct access
+  const loginTime = localStorage.getItem("loginTime");
+  const employeeEmail = localStorage.getItem("employeeEmail");
+  if(!employeeEmail || !loginTime || (Date.now() - loginTime > 24*60*60*1000)){
+    alert("You are not logged in. Please login first.");
     window.location.href = "index.html";
-    return;
   }
 
-  if (Date.now() - loginTime > 86400000) { // 24 hours
-    alert("Session expired! Please login again.");
-    sessionStorage.clear();
-    window.location.href = "index.html";
-    return;
+  const employeeNameInput = document.getElementById("employeeName");
+  // For simplicity, use email prefix as name (you can map email->name if needed)
+  employeeNameInput.value = employeeEmail.split("@")[0];
+
+  const quantity = document.getElementById("quantity");
+  const rate = document.getElementById("rate");
+  const makingCharges = document.getElementById("makingCharges");
+  const stoneCharges = document.getElementById("stoneCharges");
+  const amount = document.getElementById("amount");
+  const mcTypeRadios = document.getElementsByName("mcType");
+
+  function calculateTotal() {
+    const qty = parseFloat(quantity.value)||0;
+    const rt = parseFloat(rate.value)||0;
+    const mc = parseFloat(makingCharges.value)||0;
+    const stone = parseFloat(stoneCharges.value)||0;
+    const mcType = [...mcTypeRadios].find(r=>r.checked)?.value;
+
+    let total=0;
+    if(mcType==="grams") total = (((qty+mc)*rt)+stone)*1.03;
+    else total = (((qty + (qty*(mc/100)))*rt)+stone)*1.03;
+
+    amount.value = total.toFixed(2);
   }
 
-  // Auto-set employee name in form
-  const employeeSelect = document.getElementById("employeeName");
-  employeeSelect.value = employee; // if you want to map number -> name, create a mapping
-  employeeSelect.disabled = true;   // prevent changing
-});
+  [quantity,rate,makingCharges,stoneCharges].forEach(el=>el.addEventListener("input",calculateTotal));
+  mcTypeRadios.forEach(r=>r.addEventListener("change",calculateTotal));
 
-// ----- CALCULATE TOTAL -----
-const quantity = document.getElementById("quantity");
-const rate = document.getElementById("rate");
-const makingCharges = document.getElementById("makingCharges");
-const stoneCharges = document.getElementById("stoneCharges");
-const amount = document.getElementById("amount");
-const mcTypeRadios = document.getElementsByName("mcType");
+  const saveBtn=document.getElementById("saveBtn");
+  const savingText=document.getElementById("savingText");
+  const printBtn=document.getElementById("printBtn");
 
-function calculateTotal() {
-  const qty = parseFloat(quantity.value)||0;
-  const rt = parseFloat(rate.value)||0;
-  const mc = parseFloat(makingCharges.value)||0;
-  const stone = parseFloat(stoneCharges.value)||0;
-  const mcType = [...mcTypeRadios].find(r=>r.checked)?.value;
+  function generateUniqueID(){ return "EST-"+Date.now(); }
 
-  let total=0;
-  if(mcType==="grams") total = (((qty+mc)*rt)+stone)*1.03;
-  else total = (((qty + (qty*(mc/100)))*rt)+stone)*1.03;
+  saveBtn.addEventListener("click",()=>{
+    const data={
+      employeeName: employeeNameInput.value,
+      customerName: document.getElementById("customerName").value,
+      mobileNumber: document.getElementById("mobileNumber").value,
+      city: document.getElementById("city").value,
+      panNumber: document.getElementById("panNumber").value,
+      ornament: document.getElementById("ornament").value,
+      quantity: quantity.value,
+      rate: rate.value,
+      mcType: [...mcTypeRadios].find(r=>r.checked)?.value,
+      makingCharges: makingCharges.value,
+      stoneCharges: stoneCharges.value,
+      amount: parseFloat(amount.value)
+    };
 
-  amount.value = total.toFixed(2);
-}
+    if(!data.customerName){ alert("Customer Name is mandatory!"); return; }
 
-[quantity,rate,makingCharges,stoneCharges].forEach(el=>el.addEventListener("input",calculateTotal));
-mcTypeRadios.forEach(r=>r.addEventListener("change",calculateTotal));
+    saveBtn.disabled=true; savingText.style.display="inline";
 
-// ----- SAVE & PRINT -----
-const saveBtn=document.getElementById("saveBtn");
-const savingText=document.getElementById("savingText");
-const printBtn=document.getElementById("printBtn");
-
-function generateUniqueID(){ return "EST-"+Date.now(); }
-
-saveBtn.addEventListener("click",()=>{
-  const data={
-    employeeName: document.getElementById("employeeName").value,
-    customerName: document.getElementById("customerName").value,
-    mobileNumber: document.getElementById("mobileNumber").value,
-    city: document.getElementById("city").value,
-    panNumber: document.getElementById("panNumber").value,
-    ornament: document.getElementById("ornament").value,
-    quantity: quantity.value,
-    rate: rate.value,
-    mcType: [...mcTypeRadios].find(r=>r.checked)?.value,
-    makingCharges: makingCharges.value,
-    stoneCharges: stoneCharges.value,
-    amount: parseFloat(amount.value)
-  };
-
-  if(!data.customerName){ alert("Customer Name is mandatory!"); return; }
-
-  saveBtn.disabled=true; savingText.style.display="inline";
-
-  // Split logic
-  const MAX=199000;
-  let remaining=data.amount;
-  let baseID=generateUniqueID();
-  const splitEntries=[];
-  if(remaining<=MAX || data.panNumber){
-    splitEntries.push({...data, estimationID:baseID});
-  } else {
-    let i=0;
-    while(remaining>0){
-      let entryAmt=remaining>MAX?MAX:remaining;
-      splitEntries.push({...data, amount:entryAmt, estimationID:baseID+"-"+(i+1)});
-      remaining-=entryAmt; i++;
+    // Split logic
+    const MAX=199000;
+    let remaining=data.amount;
+    let baseID=generateUniqueID();
+    const splitEntries=[];
+    if(remaining<=MAX || data.panNumber){
+      splitEntries.push({...data, estimationID:baseID});
+    } else {
+      let i=0;
+      while(remaining>0){
+        let entryAmt=remaining>MAX?MAX:remaining;
+        splitEntries.push({...data, amount:entryAmt, estimationID:baseID+"-"+(i+1)});
+        remaining-=entryAmt; i++;
+      }
     }
-  }
 
-  // Send to Google Sheet
-  const scriptURL="https://script.google.com/macros/s/AKfycbzVpwpYkrB-fa65HM-VqvESom7E2VSaKUt_4w8guvRyRKkSx_ueawWdnWMGhUpEhtLDyQ/exec";
-  fetch(scriptURL, {method:"POST", body:JSON.stringify({entries:splitEntries})})
-  .then(r=>{
-    savingText.style.display="none";
-    saveBtn.style.display="none";
-    printBtn.disabled=false; printBtn.classList.add("active");
-    alert("Saved successfully!");
+    // Send to Google Sheet
+    const scriptURL="YOUR_GOOGLE_SHEET_WEB_APP_URL";
+    fetch(scriptURL, {method:"POST", body:JSON.stringify({entries:splitEntries})})
+    .then(r=>{
+      savingText.style.display="none";
+      saveBtn.style.display="none";
+      printBtn.disabled=false; printBtn.classList.add("active");
+      alert("Saved successfully!");
 
-    const printHTML = `
-      <div class='print-row'><strong>Employee:</strong> <span>${data.employeeName}</span></div>
-      <div class='print-row'><strong>Customer:</strong> <span>${data.customerName}</span></div>
-      <div class='print-row'><strong>City:</strong> <span>${data.city}</span></div>
-      <div class='print-row'><strong>Mobile:</strong> <span>${data.mobileNumber}</span></div>
-      <div class='print-row'><strong>Ornament:</strong> <span>${data.ornament}</span></div>
-      <div class='print-row'><strong>Quantity:</strong> <span>${data.quantity} gms</span></div>
-      <div class='print-row'><strong>Rate:</strong> <span>${data.rate}</span></div>
-      <div class='print-row'><strong>Making Charges:</strong> <span>${data.makingCharges}</span></div>
-      <div class='print-row'><strong>Stone Charges:</strong> <span>${data.stoneCharges}</span></div>
-      <div class='print-row'><strong>Total Amount:</strong> <span>₹ ${data.amount.toFixed(2)}</span></div>
-      <div class='print-row'><strong>Estimation ID:</strong> <span>${baseID}</span></div>`;
-    document.getElementById("printContent").innerHTML = printHTML;
-  })
-  .catch(err=>{
-    alert("Error saving!");
-    saveBtn.disabled=false;
-    savingText.style.display="none";
-    console.error(err);
+      const printHTML = `
+        <div class='print-row'><strong>Employee:</strong> <span>${data.employeeName}</span></div>
+        <div class='print-row'><strong>Customer:</strong> <span>${data.customerName}</span></div>
+        <div class='print-row'><strong>City:</strong> <span>${data.city}</span></div>
+        <div class='print-row'><strong>Mobile:</strong> <span>${data.mobileNumber}</span></div>
+        <div class='print-row'><strong>Ornament:</strong> <span>${data.ornament}</span></div>
+        <div class='print-row'><strong>Quantity:</strong> <span>${data.quantity} gms</span></div>
+        <div class='print-row'><strong>Rate:</strong> <span>${data.rate}</span></div>
+        <div class='print-row'><strong>Making Charges:</strong> <span>${data.makingCharges}</span></div>
+        <div class='print-row'><strong>Stone Charges:</strong> <span>${data.stoneCharges}</span></div>
+        <div class='print-row'><strong>Total Amount:</strong> <span>₹ ${data.amount.toFixed(2)}</span></div>
+        <div class='print-row'><strong>Estimation ID:</strong> <span>${baseID}</span></div>
+      `;
+      document.getElementById("printContent").innerHTML = printHTML;
+    })
+    .catch(err=>{
+      alert("Error saving!");
+      saveBtn.disabled=false;
+      savingText.style.display="none";
+      console.error(err);
+    });
   });
-});
 
-printBtn.addEventListener("click",()=>{
-  document.querySelector(".container").innerHTML = document.getElementById("printSection").innerHTML;
-  window.print();
-  window.location.reload();
-});
+  printBtn.addEventListener("click",()=>{
+    document.querySelector(".container").innerHTML = document.getElementById("printSection").innerHTML;
+    window.print();
+    window.location.reload();
+  });
 </script>
+
 </body>
 </html>
