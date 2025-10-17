@@ -5,7 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Keshava Jewellers - Estimation Form</title>
 <style>
-body { font-family: "Inter", sans-serif; background:#f3f4f6; margin:0; padding:0; }
+body {
+  font-family: "Inter", sans-serif;
+  background:#f3f4f6;
+  margin:0;
+  padding:0;
+}
 .container {
   max-width:700px;
   margin:40px auto;
@@ -13,28 +18,76 @@ body { font-family: "Inter", sans-serif; background:#f3f4f6; margin:0; padding:0
   padding:30px;
   border-radius:10px;
   box-shadow:0 4px 10px rgba(0,0,0,0.1);
-  text-align:left;
 }
-.logo { text-align:center; margin-bottom:15px; }
+.logo { text-align:center; margin-bottom:10px; }
 .logo img { width:100px; }
 h1,h3 { text-align:center; margin:5px 0; }
-label { display:block; margin-bottom:5px; font-weight:500; color:#333; }
-input, select { width:100%; padding:10px; margin-bottom:15px; border:1px solid #ccc; border-radius:5px; font-size:15px; text-align:left; }
-.radio-group { display:flex; gap:15px; justify-content:flex-start; margin-bottom:15px; }
-button { width:48%; padding:12px; border:none; border-radius:5px; font-size:16px; cursor:pointer; position:relative; }
+
+label {
+  display:block;
+  margin-bottom:5px;
+  font-weight:500;
+  color:#333;
+}
+input, select {
+  width:100%;
+  padding:10px;
+  margin-bottom:15px;
+  border:1px solid #ccc;
+  border-radius:5px;
+  font-size:15px;
+  text-align:left;
+}
+.radio-group {
+  display:flex;
+  gap:15px;
+  justify-content:flex-start;
+  margin-bottom:15px;
+}
+button {
+  width:48%;
+  padding:12px;
+  border:none;
+  border-radius:5px;
+  font-size:16px;
+  cursor:pointer;
+  position:relative;
+}
 .save-btn { background-color:#4f46e5; color:white; }
 .save-btn:hover { background:#4338ca; }
 #printBtn { background-color:gray; opacity:0.6; cursor:not-allowed; }
 #printBtn.active { background-color:#007bff; opacity:1; cursor:pointer; }
-.saving-text { display:none; margin-left:10px; font-weight:bold; color:#4f46e5; }
+.saving-text {
+  display:none;
+  font-weight:bold;
+  color:#4f46e5;
+  margin-left:10px;
+  vertical-align:middle;
+}
 
 /* Print layout */
 @media print {
   body { background:white; margin:0; }
-  .container { width:80mm; padding:10px; margin:0; box-shadow:none; border-radius:0; text-align:center; }
-  input, select, label { font-size:12px; width:100%; border:none; padding:2px 0; text-align:center; }
-  .radio-group, .btn-container { display:none; }
+  .container {
+    width:80mm;
+    padding:10px;
+    margin:0 auto;
+    box-shadow:none;
+    border-radius:0;
+    text-align:left;
+  }
+  .btn-container, .radio-group, input, select {
+    display:none !important;
+  }
+  .print-row {
+    display:flex;
+    justify-content:space-between;
+    font-size:12px;
+    border-bottom:1px dashed #ccc;
+    padding:2px 0;
+  }
   .logo img { width:50px; }
+  h1,h3 { text-align:center; font-size:13px; margin:2px 0; }
   @page { size:80mm auto; margin:3mm; }
 }
 </style>
@@ -48,7 +101,10 @@ button { width:48%; padding:12px; border:none; border-radius:5px; font-size:16px
 
   <form id="estimationForm">
     <label>Employee Name*</label>
-    <select id="employeeName"><option value="Sudhamsha">Sudhamsha</option><option value="Samarth">Samarth</option></select>
+    <select id="employeeName">
+      <option value="Sudhamsha">Sudhamsha</option>
+      <option value="Samarth">Samarth</option>
+    </select>
 
     <label>Customer Name*</label>
     <input type="text" id="customerName" required>
@@ -85,12 +141,20 @@ button { width:48%; padding:12px; border:none; border-radius:5px; font-size:16px
     <label>Total Amount</label>
     <input type="text" id="amount" readonly style="background:#f9fafb;font-weight:bold;">
 
-    <div class="btn-container">
+    <div class="btn-container" style="text-align:center;">
       <button type="button" class="save-btn" id="saveBtn">Save</button>
       <span class="saving-text" id="savingText">Saving...</span>
       <button type="button" id="printBtn" disabled>Print</button>
     </div>
   </form>
+
+  <!-- Hidden print section -->
+  <div id="printSection" style="display:none;">
+    <div class="logo"><img src="kc.png" alt="Logo"></div>
+    <h1>Keshava Jewellers, Sagara</h1>
+    <h3>Estimation Slip</h3>
+    <div id="printContent"></div>
+  </div>
 </div>
 
 <script>
@@ -101,7 +165,6 @@ const stoneCharges = document.getElementById("stoneCharges");
 const amount = document.getElementById("amount");
 const mcTypeRadios = document.getElementsByName("mcType");
 
-// Calculate total
 function calculateTotal() {
   const qty = parseFloat(quantity.value)||0;
   const rt = parseFloat(rate.value)||0;
@@ -119,7 +182,6 @@ function calculateTotal() {
 [quantity,rate,makingCharges,stoneCharges].forEach(el=>el.addEventListener("input",calculateTotal));
 mcTypeRadios.forEach(r=>r.addEventListener("change",calculateTotal));
 
-// Buttons
 const saveBtn=document.getElementById("saveBtn");
 const savingText=document.getElementById("savingText");
 const printBtn=document.getElementById("printBtn");
@@ -162,7 +224,7 @@ saveBtn.addEventListener("click",()=>{
     }
   }
 
-  // Send to Google Sheet Web App
+  // Save to Google Sheet
   const scriptURL="https://script.google.com/macros/s/AKfycbzVpwpYkrB-fa65HM-VqvESom7E2VSaKUt_4w8guvRyRKkSx_ueawWdnWMGhUpEhtLDyQ/exec";
   fetch(scriptURL, {method:"POST", body:JSON.stringify({entries:splitEntries})})
   .then(r=>{
@@ -170,23 +232,35 @@ saveBtn.addEventListener("click",()=>{
     saveBtn.style.display="none";
     printBtn.disabled=false; printBtn.classList.add("active");
     alert("Saved successfully!");
+
+    // Prepare print preview
+    const printHTML = `
+      <div class='print-row'><strong>Employee:</strong> <span>${data.employeeName}</span></div>
+      <div class='print-row'><strong>Customer:</strong> <span>${data.customerName}</span></div>
+      <div class='print-row'><strong>City:</strong> <span>${data.city}</span></div>
+      <div class='print-row'><strong>Mobile:</strong> <span>${data.mobileNumber}</span></div>
+      <div class='print-row'><strong>Ornament:</strong> <span>${data.ornament}</span></div>
+      <div class='print-row'><strong>Quantity:</strong> <span>${data.quantity} gms</span></div>
+      <div class='print-row'><strong>Rate:</strong> <span>${data.rate}</span></div>
+      <div class='print-row'><strong>Making Charges:</strong> <span>${data.makingCharges}</span></div>
+      <div class='print-row'><strong>Stone Charges:</strong> <span>${data.stoneCharges}</span></div>
+      <div class='print-row'><strong>Total Amount:</strong> <span>₹ ${data.amount.toFixed(2)}</span></div>
+      <div class='print-row'><strong>Estimation ID:</strong> <span>${baseID}</span></div>`;
+    document.getElementById("printContent").innerHTML = printHTML;
   })
   .catch(err=>{
-    alert("Error saving!"); 
-    saveBtn.disabled=false; 
-    savingText.style.display="none"; 
+    alert("Error saving!");
+    saveBtn.disabled=false;
+    savingText.style.display="none";
     console.error(err);
   });
 });
 
-// Print
 printBtn.addEventListener("click",()=>{
+  document.querySelector(".container").innerHTML = document.getElementById("printSection").innerHTML;
   window.print();
-  document.getElementById("estimationForm").reset();
-  printBtn.disabled=true; printBtn.classList.remove("active");
-  saveBtn.style.display="inline-block"; saveBtn.disabled=false;
+  window.location.reload();
 });
 </script>
-
 </body>
 </html>
