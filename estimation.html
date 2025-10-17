@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Keshava Jewellers - Estimation Form</title>
 <style>
+/* Base Styles */
 body {
   font-family: "Inter", sans-serif;
   background:#f3f4f6;
@@ -22,7 +23,6 @@ body {
 .logo { text-align:center; margin-bottom:10px; }
 .logo img { width:100px; }
 h1,h3 { text-align:center; margin:5px 0; }
-
 label {
   display:block;
   margin-bottom:5px;
@@ -158,38 +158,40 @@ button {
 </div>
 
 <script>
+// Elements
 const quantity = document.getElementById("quantity");
 const rate = document.getElementById("rate");
 const makingCharges = document.getElementById("makingCharges");
 const stoneCharges = document.getElementById("stoneCharges");
 const amount = document.getElementById("amount");
 const mcTypeRadios = document.getElementsByName("mcType");
+const saveBtn = document.getElementById("saveBtn");
+const savingText = document.getElementById("savingText");
+const printBtn = document.getElementById("printBtn");
 
+// Total calculation
 function calculateTotal() {
-  const qty = parseFloat(quantity.value)||0;
-  const rt = parseFloat(rate.value)||0;
-  const mc = parseFloat(makingCharges.value)||0;
-  const stone = parseFloat(stoneCharges.value)||0;
-  const mcType = [...mcTypeRadios].find(r=>r.checked)?.value;
-
-  let total=0;
-  if(mcType==="grams") total = (((qty+mc)*rt)+stone)*1.03;
-  else total = (((qty + (qty*(mc/100)))*rt)+stone)*1.03;
-
+  const qty = parseFloat(quantity.value) || 0;
+  const rt = parseFloat(rate.value) || 0;
+  const mc = parseFloat(makingCharges.value) || 0;
+  const stone = parseFloat(stoneCharges.value) || 0;
+  const mcType = [...mcTypeRadios].find(r => r.checked)?.value;
+  let total = 0;
+  if(mcType === "grams") total = (((qty + mc) * rt) + stone) * 1.03;
+  else total = (((qty + (qty*(mc/100))) * rt) + stone) * 1.03;
   amount.value = total.toFixed(2);
 }
 
-[quantity,rate,makingCharges,stoneCharges].forEach(el=>el.addEventListener("input",calculateTotal));
-mcTypeRadios.forEach(r=>r.addEventListener("change",calculateTotal));
+// Event listeners for calculations
+[quantity, rate, makingCharges, stoneCharges].forEach(el => el.addEventListener("input", calculateTotal));
+mcTypeRadios.forEach(r => r.addEventListener("change", calculateTotal));
 
-const saveBtn=document.getElementById("saveBtn");
-const savingText=document.getElementById("savingText");
-const printBtn=document.getElementById("printBtn");
+// Generate unique ID
+function generateUniqueID(){ return "EST-" + Date.now(); }
 
-function generateUniqueID(){ return "EST-"+Date.now(); }
-
-saveBtn.addEventListener("click",()=>{
-  const data={
+// Save button logic
+saveBtn.addEventListener("click", () => {
+  const data = {
     employeeName: document.getElementById("employeeName").value,
     customerName: document.getElementById("customerName").value,
     mobileNumber: document.getElementById("mobileNumber").value,
@@ -198,7 +200,7 @@ saveBtn.addEventListener("click",()=>{
     ornament: document.getElementById("ornament").value,
     quantity: quantity.value,
     rate: rate.value,
-    mcType: [...mcTypeRadios].find(r=>r.checked)?.value,
+    mcType: [...mcTypeRadios].find(r => r.checked)?.value,
     makingCharges: makingCharges.value,
     stoneCharges: stoneCharges.value,
     amount: parseFloat(amount.value)
@@ -206,34 +208,36 @@ saveBtn.addEventListener("click",()=>{
 
   if(!data.customerName){ alert("Customer Name is mandatory!"); return; }
 
-  saveBtn.disabled=true; savingText.style.display="inline";
+  saveBtn.disabled = true;
+  savingText.style.display = "inline";
 
   // Split logic
-  const MAX=199000;
-  let remaining=data.amount;
-  let baseID=generateUniqueID();
-  const splitEntries=[];
-  if(remaining<=MAX || data.panNumber){
-    splitEntries.push({...data, estimationID:baseID});
+  const MAX = 199000;
+  let remaining = data.amount;
+  let baseID = generateUniqueID();
+  const splitEntries = [];
+  if(remaining <= MAX || data.panNumber){
+    splitEntries.push({...data, estimationID: baseID});
   } else {
-    let i=0;
-    while(remaining>0){
-      let entryAmt=remaining>MAX?MAX:remaining;
-      splitEntries.push({...data, amount:entryAmt, estimationID:baseID+"-"+(i+1)});
-      remaining-=entryAmt; i++;
+    let i = 0;
+    while(remaining > 0){
+      let entryAmt = remaining > MAX ? MAX : remaining;
+      splitEntries.push({...data, amount: entryAmt, estimationID: baseID + "-" + (i+1)});
+      remaining -= entryAmt; i++;
     }
   }
 
-  // Save to Google Sheet
-  const scriptURL="https://script.google.com/macros/s/AKfycbzVpwpYkrB-fa65HM-VqvESom7E2VSaKUt_4w8guvRyRKkSx_ueawWdnWMGhUpEhtLDyQ/exec";
-  fetch(scriptURL, {method:"POST", body:JSON.stringify({entries:splitEntries})})
-  .then(r=>{
-    savingText.style.display="none";
-    saveBtn.style.display="none";
-    printBtn.disabled=false; printBtn.classList.add("active");
+  // Send to Google Sheet
+  const scriptURL = "https://script.google.com/macros/s/AKfycbzVpwpYkrB-fa65HM-VqvESom7E2VSaKUt_4w8guvRyRKkSx_ueawWdnWMGhUpEhtLDyQ/exec";
+  fetch(scriptURL, {method:"POST", body: JSON.stringify({entries: splitEntries})})
+  .then(r => {
+    savingText.style.display = "none";
+    saveBtn.style.display = "none";
+    printBtn.disabled = false;
+    printBtn.classList.add("active");
     alert("Saved successfully!");
 
-    // Prepare print preview
+    // Prepare print content
     const printHTML = `
       <div class='print-row'><strong>Employee:</strong> <span>${data.employeeName}</span></div>
       <div class='print-row'><strong>Customer:</strong> <span>${data.customerName}</span></div>
@@ -248,15 +252,16 @@ saveBtn.addEventListener("click",()=>{
       <div class='print-row'><strong>Estimation ID:</strong> <span>${baseID}</span></div>`;
     document.getElementById("printContent").innerHTML = printHTML;
   })
-  .catch(err=>{
+  .catch(err => {
     alert("Error saving!");
-    saveBtn.disabled=false;
-    savingText.style.display="none";
+    saveBtn.disabled = false;
+    savingText.style.display = "none";
     console.error(err);
   });
 });
 
-printBtn.addEventListener("click",()=>{
+// Print logic
+printBtn.addEventListener("click", () => {
   document.querySelector(".container").innerHTML = document.getElementById("printSection").innerHTML;
   window.print();
   window.location.reload();
