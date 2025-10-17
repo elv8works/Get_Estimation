@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keshava Jewellers - Employee Login</title>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+<style>
+body { font-family: "Inter", sans-serif; background:#f3f4f6; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; }
+.container { background:white; padding:30px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); width:350px; text-align:center; }
+h2 { color:#333; }
+input { width:100%; padding:10px; margin:10px 0; border:1px solid #ccc; border-radius:5px; }
+button { width:100%; padding:10px; background:#4f46e5; color:white; border:none; border-radius:5px; font-size:16px; cursor:pointer; }
+button:hover { background:#4338ca; }
+#recaptcha-container { margin-top:10px; }
+.hidden { display:none; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Employee Login</h2>
+  <div id="step1">
+    <input type="text" id="phoneNumber" placeholder="+91XXXXXXXXXX">
+    <div id="recaptcha-container"></div>
+    <button onclick="sendOTP()">Send OTP</button>
+  </div>
+
+  <div id="step2" class="hidden">
+    <input type="text" id="otp" placeholder="Enter OTP">
+    <button onclick="verifyOTP()">Verify OTP</button>
+  </div>
+
+  <p id="status"></p>
+</div>
+
+<script>
+  // 🔹 Replace with your Firebase config
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_MSG_ID",
+    appId: "YOUR_APP_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+  window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+    'size': 'normal',
+    'callback': function(response) {
+      console.log("Recaptcha verified");
+    }
+  });
+
+  function sendOTP() {
+    const phoneNumber = document.getElementById("phoneNumber").value.trim();
+    if (!phoneNumber.startsWith("+91")) {
+      alert("Please include +91 before the mobile number.");
+      return;
+    }
+    firebase.auth().signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
+      .then(confirmationResult => {
+        window.confirmationResult = confirmationResult;
+        document.getElementById("step1").classList.add("hidden");
+        document.getElementById("step2").classList.remove("hidden");
+        document.getElementById("status").innerText = "OTP sent successfully!";
+      })
+      .catch(error => {
+        document.getElementById("status").innerText = "Error: " + error.message;
+      });
+  }
+
+  function verifyOTP() {
+    const otp = document.getElementById("otp").value.trim();
+    confirmationResult.confirm(otp)
+      .then(result => {
+        const user = result.user;
+        localStorage.setItem("employeePhone", user.phoneNumber);
+        window.location.href = "estimation.html";
+      })
+      .catch(error => {
+        document.getElementById("status").innerText = "Invalid OTP!";
+      });
+  }
+</script>
+</body>
+</html>
