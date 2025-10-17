@@ -5,22 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Keshava Jewellers - Employee Login</title>
 <style>
-body { font-family: "Inter", sans-serif; background:#f3f4f6; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; }
-.container { background:white; padding:30px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1); width:320px; text-align:center; }
-input { width:100%; padding:10px; margin:10px 0; border:1px solid #ccc; border-radius:5px; }
-button { width:100%; padding:10px; margin:10px 0; background:#4f46e5; color:white; border:none; border-radius:5px; cursor:pointer; }
+body { font-family: "Inter", sans-serif; background:#f3f4f6; margin:0; display:flex; justify-content:center; align-items:center; height:100vh; }
+.container { background:#fff; padding:40px; border-radius:15px; box-shadow:0 8px 20px rgba(0,0,0,0.15); width:350px; text-align:center; }
+h2 { color:#4f46e5; margin-bottom:25px; }
+input { width:100%; padding:12px; margin:10px 0; border:1px solid #ccc; border-radius:8px; font-size:15px; }
+button { width:100%; padding:12px; margin-top:15px; background:#4f46e5; color:white; border:none; border-radius:8px; font-size:16px; cursor:pointer; position:relative; overflow:hidden; }
 button:disabled { background:gray; cursor:not-allowed; }
+button .loading { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); display:none; font-weight:bold; }
+.show-loading { pointer-events:none; color:transparent; }
+.show-loading .loading { display:block; color:white; }
+#recaptcha-container { margin-top:10px; }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>Employee Login</h2>
+  <h2>Keshava Jewellers - Employee Login</h2>
+
   <input type="text" id="phoneNumber" placeholder="+91" value="+91">
   <div id="recaptcha-container"></div>
-  <button id="getOtpBtn">Get OTP</button>
+
+  <button id="getOtpBtn">Get OTP <span class="loading">Sending...</span></button>
   <input type="text" id="otpInput" placeholder="Enter OTP" style="display:none;">
-  <button id="verifyOtpBtn" style="display:none;">Verify OTP</button>
+  <button id="verifyOtpBtn" style="display:none;">Verify OTP <span class="loading">Verifying...</span></button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -28,27 +35,33 @@ button:disabled { background:gray; cursor:not-allowed; }
 
 <script>
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDu5HrS1C-sL1mvTIpQ8Z_29l46SgmXugM",
+  authDomain: "getestimation-e0978.firebaseapp.com",
+  projectId: "getestimation-e0978",
+  storageBucket: "getestimation-e0978.firebasestorage.app",
+  messagingSenderId: "305257891317",
+  appId: "1:305257891317:web:5b20c8e5121d0fbb9a0cbc",
+  measurementId: "G-21C5H9BRQ7"
 };
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-const allowedEmployees = ["+911234567890","+919876543210"]; // only registered employees
+// Only registered employees
+const allowedEmployees = ["+911234567890","+919876543210"]; 
 
-const getOtpBtn = document.getElementById("getOtpBtn");
-const verifyOtpBtn = document.getElementById("verifyOtpBtn");
 const phoneInput = document.getElementById("phoneNumber");
 const otpInput = document.getElementById("otpInput");
+const getOtpBtn = document.getElementById("getOtpBtn");
+const verifyOtpBtn = document.getElementById("verifyOtpBtn");
 
 window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { size: 'invisible' });
-
 let confirmationResult;
+
+function showLoading(btn, show){
+  if(show) btn.classList.add("show-loading");
+  else btn.classList.remove("show-loading");
+}
 
 getOtpBtn.addEventListener("click", ()=>{
   const phoneNumber = phoneInput.value.trim();
@@ -56,28 +69,28 @@ getOtpBtn.addEventListener("click", ()=>{
     alert("Your mobile number is not registered. Contact the employer.");
     return;
   }
-
-  getOtpBtn.disabled = true;
+  showLoading(getOtpBtn,true);
 
   auth.signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
-  .then((result)=>{
+  .then(result => {
     confirmationResult = result;
     alert("OTP sent to " + phoneNumber);
-    otpInput.style.display = "block";
-    verifyOtpBtn.style.display = "block";
+    otpInput.style.display="block";
+    verifyOtpBtn.style.display="block";
   })
   .catch(err=>{
     alert("Error sending OTP: " + err.message);
-    getOtpBtn.disabled = false;
-  });
+  })
+  .finally(()=> showLoading(getOtpBtn,false));
 });
 
 verifyOtpBtn.addEventListener("click", ()=>{
   const otp = otpInput.value.trim();
   if(!otp) return alert("Enter OTP");
+  showLoading(verifyOtpBtn,true);
 
   confirmationResult.confirm(otp)
-  .then((result)=>{
+  .then(result=>{
     const userPhone = result.user.phoneNumber;
     sessionStorage.setItem("loggedInEmployee", userPhone);
     sessionStorage.setItem("loginTime", Date.now());
@@ -85,7 +98,8 @@ verifyOtpBtn.addEventListener("click", ()=>{
   })
   .catch(err=>{
     alert("Invalid OTP, try again!");
-  });
+  })
+  .finally(()=> showLoading(verifyOtpBtn,false));
 });
 </script>
 </body>
