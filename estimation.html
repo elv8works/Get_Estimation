@@ -163,23 +163,23 @@ window.addEventListener("DOMContentLoaded", () => {
   const employee = sessionStorage.getItem("loggedInEmployee");
   const loginTime = parseInt(sessionStorage.getItem("loginTime"), 10);
 
-  if(!employee) {
+  if (!employee) {
     alert("You are not logged in!");
-    window.location.href = "login.html";
+    window.location.href = "index.html";
     return;
   }
 
-  if(Date.now() - loginTime > 86400000){
+  if (Date.now() - loginTime > 86400000) { // 24 hours
     alert("Session expired! Please login again.");
     sessionStorage.clear();
     window.location.href = "index.html";
     return;
   }
 
-  // Auto-set employee name and restrict selection
+  // Auto-set employee name in form
   const employeeSelect = document.getElementById("employeeName");
-  employeeSelect.value = employee;
-  employeeSelect.disabled = true;
+  employeeSelect.value = employee; // if you want to map number -> name, create a mapping
+  employeeSelect.disabled = true;   // prevent changing
 });
 
 // ----- CALCULATE TOTAL -----
