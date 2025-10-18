@@ -31,6 +31,7 @@ button { width: 48%; padding: 12px; border: none; border-radius: 5px; font-size:
 .save-btn:hover { background: #4338ca; }
 #printBtn { background-color: gray; opacity: 0.6; cursor: not-allowed; }
 #printBtn.active { background-color: #007bff; opacity: 1; cursor: pointer; }
+#restoreBtn { background-color: #22c55e; color:white; }
 
 /* Print layout */
 @media print {
@@ -94,6 +95,7 @@ button { width: 48%; padding: 12px; border: none; border-radius: 5px; font-size:
       <button type="button" class="save-btn" id="saveBtn">Save</button>
       <button type="button" id="printBtn" disabled>Print</button>
       <button type="reset">Reset</button>
+      <button type="button" id="restoreBtn">Restore Last Entry</button>
     </div>
   </form>
 
@@ -168,6 +170,9 @@ function maskPAN(pan, visibleDigits=3){
 --------------------------------*/
 const saveBtn=document.getElementById("saveBtn");
 const printBtn=document.getElementById("printBtn");
+const restoreBtn=document.getElementById("restoreBtn");
+
+let lastSavedData = null; // store latest entry
 
 function generateUniqueID(){ return "EST-"+Date.now(); }
 
@@ -194,7 +199,6 @@ saveBtn.addEventListener("click", async () => {
 
   // Change button text to Saving
   saveBtn.disabled = true;
-  const originalText = saveBtn.textContent;
   saveBtn.textContent = "Saving...";
 
   try {
@@ -225,11 +229,15 @@ saveBtn.addEventListener("click", async () => {
     alert("Saved successfully!");
     printBtn.disabled=false;
     printBtn.classList.add("active");
+    saveBtn.style.display = "none"; // remove save button after save
+
+    lastSavedData = {...data}; // store latest saved entry
 
     // Zoho integration placeholder
     sendToZoho(data);
 
     // Prepare print content (masked)
+    const mcSuffix = data.mcType==="grams" ? "gms" : "%";
     const printHTML=`
       <div class='print-row'><strong>Employee:</strong><span>${data.employeeName}</span></div>
       <div class='print-row'><strong>Customer:</strong><span>${data.customerName}</span></div>
@@ -239,7 +247,7 @@ saveBtn.addEventListener("click", async () => {
       <div class='print-row'><strong>Ornament:</strong><span>${data.ornament}</span></div>
       <div class='print-row'><strong>Quantity:</strong><span>${data.quantity} gms</span></div>
       <div class='print-row'><strong>Rate:</strong><span>${data.rate}</span></div>
-      <div class='print-row'><strong>Making Charges:</strong><span>${data.makingCharges}</span></div>
+      <div class='print-row'><strong>VA (Making Charges ${mcSuffix}):</strong><span>${data.makingCharges}</span></div>
       <div class='print-row'><strong>Stone Charges:</strong><span>${data.stoneCharges}</span></div>
       <div class='print-row'><strong>Total Amount:</strong><span>₹ ${data.amount.toFixed(2)}</span></div>
       <div class='print-row'><strong>Estimation ID:</strong><span>${baseID}</span></div>
@@ -249,9 +257,8 @@ saveBtn.addEventListener("click", async () => {
   } catch(err){
     console.error(err);
     alert("Error saving!");
-  } finally {
-    saveBtn.disabled=false;
-    saveBtn.textContent = originalText;
+    saveBtn.disabled = false;
+    saveBtn.textContent = "Save";
   }
 });
 
@@ -270,17 +277,46 @@ function sendToZoho(data){
     }
   };
   console.log("Zoho payload ready:", payload);
-  // Later implement fetch with Authorization header
+  // Implement fetch with Authorization header later
 }
 
 /* -------------------------------
-   PRINT FUNCTION
+   PRINT FUNCTION (MOBILE SAFE)
 --------------------------------*/
 printBtn.addEventListener("click",()=>{
-  document.querySelector(".container").innerHTML = document.getElementById("printSection").innerHTML;
+  const printSection = document.getElementById("printSection");
+  printSection.style.display = "block";
+
   window.print();
-  window.location.reload();
+
+  printSection.style.display = "none";
+
+  // Reset form after print
+  document.getElementById("estimationForm").reset();
+  printBtn.disabled = true;
+  printBtn.classList.remove("active");
+  saveBtn.style.display = "inline-block";
+});
+
+/* -------------------------------
+   RESTORE LAST ENTRY
+--------------------------------*/
+restoreBtn.addEventListener("click", ()=>{
+  if(!lastSavedData) return alert("No saved entry found!");
+  document.getElementById("customerName").value = lastSavedData.customerName;
+  document.getElementById("mobileNumber").value = lastSavedData.mobileNumber;
+  document.getElementById("city").value = lastSavedData.city;
+  document.getElementById("panNumber").value = lastSavedData.panNumber;
+  document.getElementById("ornament").value = lastSavedData.ornament;
+  document.getElementById("quantity").value = lastSavedData.quantity;
+  document.getElementById("rate").value = lastSavedData.rate;
+  document.getElementById("makingCharges").value = lastSavedData.makingCharges;
+  document.getElementById("stoneCharges").value = lastSavedData.stoneCharges;
+
+  [...mcTypeRadios].forEach(r => r.checked = (r.value === lastSavedData.mcType));
+  calculateTotal();
 });
 </script>
+
 </body>
 </html>
