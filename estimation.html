@@ -60,13 +60,13 @@ button { width:48%; padding:12px; border:none; border-radius:5px; font-size:16px
     <input type="text" id="customerName" required>
 
     <label>Mobile Number</label>
-    <input type="text" id="mobileNumber">
+    <input type="text" id="mobileNumber" pattern="[0-9]{10}" title="Enter 10-digit number">
 
     <label>City</label>
     <input type="text" id="city">
 
     <label>PAN Number (Optional)</label>
-    <input type="text" id="panNumber" placeholder="Enter PAN if provided">
+    <input type="text" id="panNumber" placeholder="ABCDE1234F" maxlength="10">
 
     <label>Ornament Chosen</label>
     <input type="text" id="ornament">
@@ -98,7 +98,6 @@ button { width:48%; padding:12px; border:none; border-radius:5px; font-size:16px
     </div>
   </form>
 
-  <!-- Hidden print section -->
   <div id="printSection" style="display:none;">
     <div class="logo"><img src="kc.png" alt="Logo"></div>
     <h1>Keshava Jewellers, Sagara</h1>
@@ -108,7 +107,7 @@ button { width:48%; padding:12px; border:none; border-radius:5px; font-size:16px
 </div>
 
 <script>
-  // Restrict direct access
+  // 🔒 Restrict unauthorized access
   const loginTime = localStorage.getItem("loginTime");
   const employeeEmail = localStorage.getItem("employeeEmail");
   if(!employeeEmail || !loginTime || (Date.now() - loginTime > 24*60*60*1000)){
@@ -116,86 +115,96 @@ button { width:48%; padding:12px; border:none; border-radius:5px; font-size:16px
     window.location.href = "index.html";
   }
 
-  const employeeNameInput = document.getElementById("employeeName");
-  // For simplicity, use email prefix as name (you can map email->name if needed)
-  employeeNameInput.value = employeeEmail.split("@")[0];
+  document.getElementById("employeeName").value = employeeEmail.split("@")[0];
 
-  const quantity = document.getElementById("quantity");
-  const rate = document.getElementById("rate");
-  const makingCharges = document.getElementById("makingCharges");
-  const stoneCharges = document.getElementById("stoneCharges");
-  const amount = document.getElementById("amount");
-  const mcTypeRadios = document.getElementsByName("mcType");
+  // 🧮 Auto-calculate
+  const q=document.getElementById("quantity"), r=document.getElementById("rate"),
+        m=document.getElementById("makingCharges"), s=document.getElementById("stoneCharges"),
+        a=document.getElementById("amount"), mcType=document.getElementsByName("mcType");
+  function calc(){
+    const qty=parseFloat(q.value)||0, rate=parseFloat(r.value)||0,
+          mc=parseFloat(m.value)||0, st=parseFloat(s.value)||0;
+    const t=[...mcType].find(x=>x.checked).value;
+    let total = (t==="grams") ? ((qty+mc)*rate+st)*1.03 : ((qty+(qty*(mc/100)))*rate+st)*1.03;
+    a.value=total.toFixed(2);
+  }
+  [q,r,m,s].forEach(el=>el.addEventListener("input",calc));
+  mcType.forEach(r=>r.addEventListener("change",calc));
 
-  function calculateTotal() {
-    const qty = parseFloat(quantity.value)||0;
-    const rt = parseFloat(rate.value)||0;
-    const mc = parseFloat(makingCharges.value)||0;
-    const stone = parseFloat(stoneCharges.value)||0;
-    const mcType = [...mcTypeRadios].find(r=>r.checked)?.value;
+  // 🆔 Generate ID
+  function genID(){ return "EST-"+Date.now(); }
 
-    let total=0;
-    if(mcType==="grams") total = (((qty+mc)*rt)+stone)*1.03;
-    else total = (((qty + (qty*(mc/100)))*rt)+stone)*1.03;
+  const scriptURL="YOUR_GOOGLE_SCRIPT_WEBAPP_URL"; // Replace this
 
-    amount.value = total.toFixed(2);
+  // ✅ PAN regex
+  function validPAN(pan){
+    if(!pan) return true; // optional
+    return /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan.toUpperCase());
   }
 
-  [quantity,rate,makingCharges,stoneCharges].forEach(el=>el.addEventListener("input",calculateTotal));
-  mcTypeRadios.forEach(r=>r.addEventListener("change",calculateTotal));
+  const saveBtn=document.getElementById("saveBtn"), savingText=document.getElementById("savingText"), printBtn=document.getElementById("printBtn");
 
-  const saveBtn=document.getElementById("saveBtn");
-  const savingText=document.getElementById("savingText");
-  const printBtn=document.getElementById("printBtn");
+  saveBtn.addEventListener("click",async ()=>{
+    const pan=document.getElementById("panNumber").value.trim().toUpperCase();
+    if(pan && !validPAN(pan)){
+      alert("Invalid PAN format! Must be like ABCDE1234F");
+      return;
+    }
 
-  function generateUniqueID(){ return "EST-"+Date.now(); }
-
-  saveBtn.addEventListener("click",()=>{
     const data={
-      employeeName: employeeNameInput.value,
-      customerName: document.getElementById("customerName").value,
-      mobileNumber: document.getElementById("mobileNumber").value,
-      city: document.getElementById("city").value,
-      panNumber: document.getElementById("panNumber").value,
-      ornament: document.getElementById("ornament").value,
-      quantity: quantity.value,
-      rate: rate.value,
-      mcType: [...mcTypeRadios].find(r=>r.checked)?.value,
-      makingCharges: makingCharges.value,
-      stoneCharges: stoneCharges.value,
-      amount: parseFloat(amount.value)
+      employeeName:document.getElementById("employeeName").value,
+      customerName:document.getElementById("customerName").value,
+      mobileNumber:document.getElementById("mobileNumber").value,
+      city:document.getElementById("city").value,
+      panNumber:pan,
+      ornament:document.getElementById("ornament").value,
+      quantity:q.value,
+      rate:r.value,
+      mcType:[...mcType].find(r=>r.checked)?.value,
+      makingCharges:m.value,
+      stoneCharges:s.value,
+      amount:parseFloat(a.value)||0
     };
 
     if(!data.customerName){ alert("Customer Name is mandatory!"); return; }
 
     saveBtn.disabled=true; savingText.style.display="inline";
 
-    // Split logic
+    // 🧩 Split logic
     const MAX=199000;
-    let remaining=data.amount;
-    let baseID=generateUniqueID();
-    const splitEntries=[];
-    if(remaining<=MAX || data.panNumber){
-      splitEntries.push({...data, estimationID:baseID});
-    } else {
+    let remain=data.amount; let base=genID(); const entries=[];
+    if(remain<=MAX||data.panNumber){
+      entries.push({...data,estimationID:base});
+    }else{
       let i=0;
-      while(remaining>0){
-        let entryAmt=remaining>MAX?MAX:remaining;
-        splitEntries.push({...data, amount:entryAmt, estimationID:baseID+"-"+(i+1)});
-        remaining-=entryAmt; i++;
+      while(remain>0){
+        const amt=remain>MAX?MAX:remain;
+        entries.push({...data,amount:amt,estimationID:base+"-"+(++i)});
+        remain-=amt;
       }
     }
 
-    // Send to Google Sheet
-    const scriptURL="YOUR_GOOGLE_SHEET_WEB_APP_URL";
-    fetch(scriptURL, {method:"POST", body:JSON.stringify({entries:splitEntries})})
-    .then(r=>{
+    // 🚫 Check for duplicate PAN in Google Sheet before saving
+    // if(pan){
+    //   const res=await fetch(`${scriptURL}?panCheck=${pan}`);
+    //   const json=await res.json();
+    //   if(json.exists){
+    //     alert("This PAN already exists in records!");
+    //     savingText.style.display="none";
+    //     saveBtn.disabled=false;
+    //     return;
+    //   }
+    // }
+
+    // ✅ Save
+    fetch(scriptURL,{method:"POST",body:JSON.stringify({entries})})
+    .then(r=>r.json())
+    .then(()=>{
       savingText.style.display="none";
       saveBtn.style.display="none";
       printBtn.disabled=false; printBtn.classList.add("active");
       alert("Saved successfully!");
-
-      const printHTML = `
+      const pHTML=`
         <div class='print-row'><strong>Employee:</strong> <span>${data.employeeName}</span></div>
         <div class='print-row'><strong>Customer:</strong> <span>${data.customerName}</span></div>
         <div class='print-row'><strong>City:</strong> <span>${data.city}</span></div>
@@ -206,24 +215,22 @@ button { width:48%; padding:12px; border:none; border-radius:5px; font-size:16px
         <div class='print-row'><strong>Making Charges:</strong> <span>${data.makingCharges}</span></div>
         <div class='print-row'><strong>Stone Charges:</strong> <span>${data.stoneCharges}</span></div>
         <div class='print-row'><strong>Total Amount:</strong> <span>₹ ${data.amount.toFixed(2)}</span></div>
-        <div class='print-row'><strong>Estimation ID:</strong> <span>${baseID}</span></div>
-      `;
-      document.getElementById("printContent").innerHTML = printHTML;
+        <div class='print-row'><strong>Estimation ID:</strong> <span>${base}</span></div>`;
+      document.getElementById("printContent").innerHTML=pHTML;
     })
-    .catch(err=>{
+    .catch(e=>{
+      console.error(e);
       alert("Error saving!");
-      saveBtn.disabled=false;
       savingText.style.display="none";
-      console.error(err);
+      saveBtn.disabled=false;
     });
   });
 
   printBtn.addEventListener("click",()=>{
-    document.querySelector(".container").innerHTML = document.getElementById("printSection").innerHTML;
+    document.querySelector(".container").innerHTML=document.getElementById("printSection").innerHTML;
     window.print();
     window.location.reload();
   });
 </script>
-
 </body>
 </html>
