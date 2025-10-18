@@ -26,14 +26,16 @@ h1, h3 { text-align: center; margin: 5px 0; }
 label { display: block; margin-bottom: 5px; font-weight: 500; color: #333; }
 input, select { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; font-size: 15px; text-align: left; }
 .radio-group { display: flex; gap: 15px; justify-content: flex-start; margin-bottom: 15px; }
-button { width: 48%; padding: 12px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; position: relative; }
+button { width: 30%; padding: 12px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; margin-right: 5px; }
 .save-btn { background-color: #4f46e5; color: white; }
 .save-btn:hover { background: #4338ca; }
 #printBtn { background-color: gray; opacity: 0.6; cursor: not-allowed; }
 #printBtn.active { background-color: #007bff; opacity: 1; cursor: pointer; }
+.reset-btn { background-color: #f97316; color: white; }
+.reset-btn:hover { background-color: #c2410c; }
 .saving-text { display: none; font-weight: bold; color: #4f46e5; margin-left: 10px; vertical-align: middle; }
 
-/* Print layout */
+/* Print layout optimized for 80mm thermal */
 @media print {
   body { background: white; margin: 0; }
   .container { width: 80mm; padding: 10px; margin: 0 auto; box-shadow: none; border-radius: 0; text-align: left; }
@@ -41,6 +43,7 @@ button { width: 48%; padding: 12px; border: none; border-radius: 5px; font-size:
   .print-row { display: flex; justify-content: space-between; font-size: 12px; border-bottom: 1px dashed #ccc; padding: 2px 0; }
   .logo img { width: 50px; }
   h1, h3 { text-align: center; font-size: 13px; margin: 2px 0; }
+  .footer-note { font-size: 11px; margin-top: 5px; text-align: center; }
   @page { size: 80mm auto; margin: 3mm; }
 }
 </style>
@@ -95,6 +98,7 @@ button { width: 48%; padding: 12px; border: none; border-radius: 5px; font-size:
       <button type="button" class="save-btn" id="saveBtn">Save</button>
       <span class="saving-text" id="savingText">Saving...</span>
       <button type="button" id="printBtn" disabled>Print</button>
+      <button type="button" class="reset-btn" id="resetBtn">Reset</button>
     </div>
   </form>
 
@@ -103,6 +107,7 @@ button { width: 48%; padding: 12px; border: none; border-radius: 5px; font-size:
     <h1>Keshava Jewellers, Sagara</h1>
     <h3>Estimation Slip</h3>
     <div id="printContent"></div>
+    <div class="footer-note">Note: This estimated cost is valid for 24 hours.</div>
   </div>
 </div>
 
@@ -143,18 +148,19 @@ function calculateTotal(){
 mcTypeRadios.forEach(r=>r.addEventListener("change",calculateTotal));
 
 /* -------------------------------
-   PAN VALIDATION FUNCTION
+   PAN VALIDATION
 --------------------------------*/
 function isValidPAN(pan){
   return /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan);
 }
 
 /* -------------------------------
-   SAVE & ZOHO INTEGRATION
+   SAVE & GOOGLE SHEET INTEGRATION
 --------------------------------*/
 const saveBtn=document.getElementById("saveBtn");
 const savingText=document.getElementById("savingText");
 const printBtn=document.getElementById("printBtn");
+const resetBtn=document.getElementById("resetBtn");
 
 function generateUniqueID(){ return "EST-"+Date.now(); }
 
@@ -197,7 +203,7 @@ saveBtn.addEventListener("click",()=>{
     }
   }
 
-  // Your Google Sheet Script URL
+  // Google Apps Script endpoint
   const scriptURL="https://script.google.com/macros/s/AKfycbw19fcF57d173j9Bhm5v1yc2ehoL-kQCgF4RABNL_DJhRsz_kRGnbb5XE0yO5Yeg9VwAA/exec";
 
   fetch(scriptURL,{
@@ -210,7 +216,7 @@ saveBtn.addEventListener("click",()=>{
     printBtn.disabled=false; printBtn.classList.add("active");
     alert("Saved successfully!");
 
-    // ✅ Optional Zoho Integration Trigger
+    // ✅ Placeholder for Zoho CRM integration
     sendToZoho(data);
 
     const printHTML=`
@@ -237,11 +243,9 @@ saveBtn.addEventListener("click",()=>{
 });
 
 /* -------------------------------
-   ZOHO INTEGRATION (Optional)
+   ZOHO INTEGRATION PLACEHOLDER
 --------------------------------*/
 function sendToZoho(data){
-  // ⚙️ Placeholder for Zoho API call
-  // Example endpoint (replace later):
   const ZOHO_API_URL = "https://creator.zoho.in/api/v2/your_app/report/addRecord";
   const payload = {
     data: {
@@ -253,12 +257,8 @@ function sendToZoho(data){
     }
   };
   console.log("Zoho payload ready:", payload);
-  // Later you’ll add:
-  // fetch(ZOHO_API_URL, {
-  //   method: "POST",
-  //   headers: { "Authorization": "Zoho-oauthtoken YOUR_TOKEN", "Content-Type": "application/json" },
-  //   body: JSON.stringify(payload)
-  // });
+  // Future fetch call:
+  // fetch(ZOHO_API_URL, { method: "POST", headers: { "Authorization": "Zoho-oauthtoken YOUR_TOKEN", "Content-Type": "application/json" }, body: JSON.stringify(payload) });
 }
 
 /* -------------------------------
@@ -268,6 +268,14 @@ printBtn.addEventListener("click",()=>{
   document.querySelector(".container").innerHTML=document.getElementById("printSection").innerHTML;
   window.print();
   window.location.reload();
+});
+
+/* -------------------------------
+   RESET FORM
+--------------------------------*/
+resetBtn.addEventListener("click",()=>{
+  document.getElementById("estimationForm").reset();
+  amount.value = "";
 });
 </script>
 
