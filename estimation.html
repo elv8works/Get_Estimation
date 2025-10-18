@@ -2,321 +2,167 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Keshava Jewellers - Estimation Form</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Keshava Jewellers Estimation</title>
 <style>
-body {
-  font-family: "Inter", sans-serif;
-  background: #f3f4f6;
-  margin: 0;
-  padding: 0;
-}
-.container {
-  max-width: 700px;
-  margin: 40px auto;
-  background: #fff;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-.logo { text-align: center; margin-bottom: 10px; }
-.logo img { width: 100px; }
-h1, h3 { text-align: center; margin: 5px 0; }
-
-label { display: block; margin-bottom: 5px; font-weight: 500; color: #333; }
-input, select { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; font-size: 15px; text-align: left; }
-.radio-group { display: flex; gap: 15px; justify-content: flex-start; margin-bottom: 15px; }
-button { width: 48%; padding: 12px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; position: relative; }
-.save-btn { background-color: #4f46e5; color: white; }
-.save-btn:hover { background: #4338ca; }
-#printBtn { background-color: gray; opacity: 0.6; cursor: not-allowed; }
-#printBtn.active { background-color: #007bff; opacity: 1; cursor: pointer; }
-#restoreBtn { background-color: #22c55e; color:white; }
-
-/* Print layout */
-@media print {
-  body { background: white; margin: 0; }
-  .container { width: 80mm; padding: 10px; margin: 0 auto; box-shadow: none; border-radius: 0; text-align: left; }
-  .btn-container, .radio-group, input, select { display: none !important; }
-  .print-row { display: flex; justify-content: space-between; font-size: 12px; border-bottom: 1px dashed #ccc; padding: 2px 0; }
-  .logo img { width: 50px; }
-  h1, h3 { text-align: center; font-size: 13px; margin: 2px 0; }
-  @page { size: 80mm auto; margin: 3mm; }
+body{font-family:Arial,Helvetica,sans-serif;margin:0;padding:0;background:#fff;}
+.container{padding:10px;max-width:400px;margin:auto;}
+input,select,button{width:100%;padding:6px;margin:4px 0;border:1px solid #ccc;border-radius:5px;font-size:14px;}
+button{background:#007bff;color:#fff;border:none;cursor:pointer;}
+button:disabled{opacity:.5;cursor:not-allowed;}
+.hidden{display:none;}
+#printSection{display:none;}
+@media print{
+ body{margin:0;padding:0;width:80mm;}
+ .container{display:none;}
+ #printSection{display:block;width:80mm;font-size:11px;}
 }
 </style>
 </head>
 <body>
 
-<div class="container" id="estimationContainer">
-  <div class="logo"><img src="kc.png" alt="Logo"></div>
-  <h1>Keshava Jewellers, Sagara</h1>
-  <h3>Estimation Slip</h3>
+<div class="container">
+  <h2 style="text-align:center;">Keshava Jewellers Estimation</h2>
 
   <form id="estimationForm">
-    <label>Employee Name*</label>
-    <input type="text" id="employeeName" readonly>
+    <label>Employee Name</label><input id="employeeName" required>
+    <label>Customer Name</label><input id="customerName" required>
+    <label>City</label><input id="city">
 
-    <label>Customer Name*</label>
-    <input type="text" id="customerName" required>
+    <label>Mobile Number</label><input id="mobileNumber" maxlength="10" pattern="[0-9]{10}" required>
+    <label>PAN Number</label><input id="panNumber" maxlength="10">
 
-    <label>Mobile Number</label>
-    <input type="text" id="mobileNumber">
+    <label>Ornament</label><input id="ornament">
+    <label>Quantity (gms)</label><input type="number" id="quantity" step="0.01">
+    <label>Rate</label><input type="number" id="rate" step="0.01">
 
-    <label>City</label>
-    <input type="text" id="city">
-
-    <label>PAN Number (Optional)</label>
-    <input type="text" id="panNumber" placeholder="ABCDE1234F">
-
-    <label>Ornament Chosen</label>
-    <input type="text" id="ornament">
-
-    <label>Quantity (gms)</label>
-    <input type="number" id="quantity" step="0.01">
-
-    <label>Rate (per gm)</label>
-    <input type="number" id="rate" step="0.01">
-
-    <div class="radio-group">
-      <label><input type="radio" name="mcType" value="grams" checked> MC in grams</label>
-      <label><input type="radio" name="mcType" value="percent"> MC in %</label>
+    <label>Making Charges Type</label>
+    <div>
+      <input type="radio" name="mcType" value="grams" checked> gms
+      <input type="radio" name="mcType" value="percent"> %
     </div>
 
-    <label>Making Charges</label>
-    <input type="number" id="makingCharges" step="0.01">
+    <label>Making Charges</label><input type="number" id="makingCharges" step="0.01">
+    <label>Stone Charges</label><input type="number" id="stoneCharges" step="0.01">
+    <label>Total Amount</label><input id="amount" readonly>
 
-    <label>Stone Charges</label>
-    <input type="number" id="stoneCharges" step="0.01">
-
-    <label>Total Amount</label>
-    <input type="text" id="amount" readonly style="background:#f9fafb;font-weight:bold;">
-
-    <div class="btn-container" style="text-align:center;">
-      <button type="button" class="save-btn" id="saveBtn">Save</button>
-      <button type="button" id="printBtn" disabled>Print</button>
-      <button type="reset">Reset</button>
-      <button type="button" id="restoreBtn">Restore Last Entry</button>
-    </div>
+    <button type="button" id="saveBtn">Save</button>
+    <button type="button" id="printBtn" disabled>Print</button>
+    <button type="button" id="restoreBtn">Restore Last</button>
   </form>
-
-  <div id="printSection" style="display:none;">
-    <div class="logo"><img src="kc.png" alt="Logo"></div>
-    <h1>Keshava Jewellers, Sagara</h1>
-    <h3>Estimation Slip</h3>
-    <div id="printContent"></div>
-    <div class="footer-note" style="font-size:11px; text-align:center; margin-top:5px;">Note: This estimated cost is valid for 24 hours.</div>
-  </div>
 </div>
 
+<div id="printSection"></div>
+
 <script>
-/* -------------------------------
-   LOGIN VALIDATION
---------------------------------*/
-const loginTime = localStorage.getItem("loginTime");
-const employeeEmail = localStorage.getItem("employeeEmail");
-if(!employeeEmail || !loginTime || (Date.now() - loginTime > 24*60*60*1000)){
-  alert("You are not logged in. Please login first.");
-  window.location.href = "index.html";
+// -------- helpers ----------
+function maskNumber(num){return num?num.replace(/\d(?=\d{4})/g,"*"):'';}
+function maskPAN(pan){return pan?pan.replace(/.(?=.{3}$)/g,"*"):'';}
+
+let lastSavedData=null;
+
+// -------- calc total ----------
+function calcTotal(){
+  const q=+quantity.value||0, r=+rate.value||0, mc=+makingCharges.value||0, s=+stoneCharges.value||0;
+  const mcType=document.querySelector('input[name="mcType"]:checked').value;
+  let t=0;
+  if(mcType==="grams") t=((q+mc)*r+s)*1.03;
+  else t=(((q+(q*(mc/100)))*r)+s)*1.03;
+  amount.value=t.toFixed(2);
 }
-document.getElementById("employeeName").value = employeeEmail.split("@")[0];
+["quantity","rate","makingCharges","stoneCharges"].forEach(id=>{
+  document.getElementById(id).addEventListener("input",calcTotal);
+});
+document.querySelectorAll('input[name="mcType"]').forEach(r=>r.addEventListener("change",calcTotal));
 
-/* -------------------------------
-   FIELD CALCULATIONS
---------------------------------*/
-const quantity=document.getElementById("quantity");
-const rate=document.getElementById("rate");
-const makingCharges=document.getElementById("makingCharges");
-const stoneCharges=document.getElementById("stoneCharges");
-const amount=document.getElementById("amount");
-const mcTypeRadios=document.getElementsByName("mcType");
+// -------- save ----------
+saveBtn.onclick=()=>{
+  saveBtn.textContent="Saving...";
+  saveBtn.disabled=true;
 
-function calculateTotal(){
-  const qty=parseFloat(quantity.value)||0;
-  const rt=parseFloat(rate.value)||0;
-  const mc=parseFloat(makingCharges.value)||0;
-  const stone=parseFloat(stoneCharges.value)||0;
-  const mcType=[...mcTypeRadios].find(r=>r.checked)?.value;
-  let total=0;
-  if(mcType==="grams") total=((qty+mc)*rt+stone)*1.03;
-  else total=(((qty+(qty*(mc/100)))*rt)+stone)*1.03;
-  amount.value=total.toFixed(2);
-}
-[quantity,rate,makingCharges,stoneCharges].forEach(el=>el.addEventListener("input",calculateTotal));
-mcTypeRadios.forEach(r=>r.addEventListener("change",calculateTotal));
-
-/* -------------------------------
-   PAN VALIDATION FUNCTION
---------------------------------*/
-function isValidPAN(pan){
-  return /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan);
-}
-
-/* -------------------------------
-   MASKING FUNCTIONS
---------------------------------*/
-function maskNumber(number, visibleDigits=4){
-  number = number || '';
-  if(number.length <= visibleDigits) return number;
-  return '*'.repeat(number.length-visibleDigits) + number.slice(-visibleDigits);
-}
-function maskPAN(pan, visibleDigits=3){
-  pan = pan || '';
-  if(pan.length <= visibleDigits) return pan;
-  return '*'.repeat(pan.length-visibleDigits) + pan.slice(-visibleDigits);
-}
-
-/* -------------------------------
-   SAVE & GOOGLE SHEET INTEGRATION
---------------------------------*/
-const saveBtn=document.getElementById("saveBtn");
-const printBtn=document.getElementById("printBtn");
-const restoreBtn=document.getElementById("restoreBtn");
-
-let lastSavedData = null; // store latest entry
-
-function generateUniqueID(){ return "EST-"+Date.now(); }
-
-saveBtn.addEventListener("click", async () => {
-  const data = {
-    employeeName: document.getElementById("employeeName").value,
-    customerName: document.getElementById("customerName").value.trim(),
-    mobileNumber: document.getElementById("mobileNumber").value.trim(),
-    city: document.getElementById("city").value.trim(),
-    panNumber: document.getElementById("panNumber").value.trim().toUpperCase(),
-    ornament: document.getElementById("ornament").value.trim(),
-    quantity: quantity.value,
-    rate: rate.value,
-    mcType: [...mcTypeRadios].find(r => r.checked)?.value,
-    makingCharges: makingCharges.value,
-    stoneCharges: stoneCharges.value,
-    amount: parseFloat(amount.value) || 0
+  const data={
+    employeeName:employeeName.value,
+    customerName:customerName.value,
+    city:city.value,
+    mobileNumber:mobileNumber.value,
+    panNumber:panNumber.value,
+    ornament:ornament.value,
+    quantity:+quantity.value||0,
+    rate:+rate.value||0,
+    mcType:document.querySelector('input[name="mcType"]:checked').value,
+    makingCharges:+makingCharges.value||0,
+    stoneCharges:+stoneCharges.value||0,
+    amount:+amount.value||0,
+    estimationID:"EST"+Date.now()
   };
 
-  if(!data.customerName){ alert("Customer Name is mandatory!"); return; }
-  if(data.panNumber && !isValidPAN(data.panNumber)){
-    alert("Invalid PAN format! Example: ABCDE1234F"); return;
-  }
+  lastSavedData=data;
+  localStorage.setItem("lastEstimation",JSON.stringify(data));
 
-  // Change button text to Saving
-  saveBtn.disabled = true;
-  saveBtn.textContent = "Saving...";
-
-  try {
-    const MAX=199000;
-    let remaining=data.amount;
-    let baseID=generateUniqueID();
-    const splitEntries=[];
-
-    if(remaining<=MAX || data.panNumber){
-      splitEntries.push({...data, estimationID: baseID});
-    } else {
-      let i=0;
-      while(remaining>0){
-        let entryAmt=remaining>MAX?MAX:remaining;
-        splitEntries.push({...data, amount:entryAmt, estimationID:baseID+"-"+(i+1)});
-        remaining-=entryAmt; i++;
-      }
-    }
-
-    // Google Apps Script endpoint
-    const scriptURL="https://script.google.com/macros/s/AKfycbw19fcF57d173j9Bhm5v1yc2ehoL-kQCgF4RABNL_DJhRsz_kRGnbb5XE0yO5Yeg9VwAA/exec";
-
-    await fetch(scriptURL,{
-      method:"POST",
-      body:JSON.stringify({entries:splitEntries})
-    });
-
-    alert("Saved successfully!");
+  setTimeout(()=>{
+    saveBtn.style.display="none";
     printBtn.disabled=false;
-    printBtn.classList.add("active");
-    saveBtn.style.display = "none"; // remove save button after save
+    alert("Saved successfully!");
+  },500);
+};
 
-    lastSavedData = {...data}; // store latest saved entry
+// -------- restore ----------
+restoreBtn.onclick=()=>{
+  const d=localStorage.getItem("lastEstimation");
+  if(!d) return alert("No previous entry found");
+  const data=JSON.parse(d);
+  employeeName.value=data.employeeName;
+  customerName.value=data.customerName;
+  city.value=data.city;
+  mobileNumber.value=data.mobileNumber;
+  panNumber.value=data.panNumber;
+  ornament.value=data.ornament;
+  quantity.value=data.quantity;
+  rate.value=data.rate;
+  makingCharges.value=data.makingCharges;
+  stoneCharges.value=data.stoneCharges;
+  amount.value=data.amount;
+  document.querySelector(`input[name="mcType"][value="${data.mcType}"]`).checked=true;
+  lastSavedData=data;
+  printBtn.disabled=false;
+  saveBtn.style.display="none";
+  alert("Restored last entry (not saved again)");
+};
 
-    // Zoho integration placeholder
-    sendToZoho(data);
-
-    // Prepare print content (masked)
-    const mcSuffix = data.mcType==="grams" ? "gms" : "%";
-    const printHTML=`
-      <div class='print-row'><strong>Employee:</strong><span>${data.employeeName}</span></div>
-      <div class='print-row'><strong>Customer:</strong><span>${data.customerName}</span></div>
-      <div class='print-row'><strong>City:</strong><span>${data.city}</span></div>
-      <div class='print-row'><strong>Mobile:</strong><span>${maskNumber(data.mobileNumber)}</span></div>
-      <div class='print-row'><strong>PAN:</strong><span>${maskPAN(data.panNumber)}</span></div>
-      <div class='print-row'><strong>Ornament:</strong><span>${data.ornament}</span></div>
-      <div class='print-row'><strong>Quantity:</strong><span>${data.quantity} gms</span></div>
-      <div class='print-row'><strong>Rate:</strong><span>${data.rate}</span></div>
-      <div class='print-row'><strong>VA (Making Charges ${mcSuffix}):</strong><span>${data.makingCharges}</span></div>
-      <div class='print-row'><strong>Stone Charges:</strong><span>${data.stoneCharges}</span></div>
-      <div class='print-row'><strong>Total Amount:</strong><span>₹ ${data.amount.toFixed(2)}</span></div>
-      <div class='print-row'><strong>Estimation ID:</strong><span>${baseID}</span></div>
-    `;
-    document.getElementById("printContent").innerHTML = printHTML;
-
-  } catch(err){
-    console.error(err);
-    alert("Error saving!");
-    saveBtn.disabled = false;
-    saveBtn.textContent = "Save";
-  }
-});
-
-/* -------------------------------
-   ZOHO INTEGRATION PLACEHOLDER
---------------------------------*/
-function sendToZoho(data){
-  const ZOHO_API_URL = "https://creator.zoho.in/api/v2/your_app/report/addRecord";
-  const payload = {
-    data: {
-      Employee_Name: data.employeeName,
-      Customer_Name: data.customerName,
-      City: data.city,
-      Mobile: data.mobileNumber,
-      Amount: data.amount
-    }
-  };
-  console.log("Zoho payload ready:", payload);
-  // Implement fetch with Authorization header later
-}
-
-/* -------------------------------
-   PRINT FUNCTION (MOBILE SAFE)
---------------------------------*/
-printBtn.addEventListener("click",()=>{
-  const printSection = document.getElementById("printSection");
-  printSection.style.display = "block";
-
+// -------- print ----------
+printBtn.onclick=()=>{
+  if(!lastSavedData) return alert("Please save first!");
+  const d=lastSavedData, mcSuffix=d.mcType==="grams"?"gms":"%";
+  const html=`
+    <div style="text-align:center;">
+      <img src="kc.png" style="width:45px;"><br>
+      <strong style="font-size:13px;">Keshava Jewellers, Sagara</strong><br>
+      <span style="font-size:11px;">Estimation Slip</span>
+    </div>
+    <div style="font-size:11px;margin-top:4px;">
+      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>Employee:</strong><span>${d.employeeName}</span></div>
+      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>Customer:</strong><span>${d.customerName}</span></div>
+      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>City:</strong><span>${d.city}</span></div>
+      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>Mobile:</strong><span>${maskNumber(d.mobileNumber)}</span></div>
+      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>PAN:</strong><span>${maskPAN(d.panNumber)}</span></div>
+      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>Ornament:</strong><span>${d.ornament}</span></div>
+      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>Qty:</strong><span>${d.quantity} gms</span></div>
+      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>Rate:</strong><span>${d.rate}</span></div>
+      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>VA (Making ${mcSuffix}):</strong><span>${d.makingCharges}</span></div>
+      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>Stone Charges:</strong><span>${d.stoneCharges}</span></div>
+      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>Total Amount:</strong><span>₹ ${d.amount.toFixed(2)}</span></div>
+      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>ID:</strong><span>${d.estimationID}</span></div>
+    </div>
+    <div style="text-align:center;font-size:9px;margin-top:5px;">Note: This estimated cost is valid for 24 hours.</div>
+  `;
+  const ps=document.getElementById("printSection");
+  ps.innerHTML=html; ps.style.display="block";
   window.print();
-
-  printSection.style.display = "none";
-
-  // Reset form after print
+  ps.style.display="none";
   document.getElementById("estimationForm").reset();
-  printBtn.disabled = true;
-  printBtn.classList.remove("active");
-  saveBtn.style.display = "inline-block";
-});
-
-/* -------------------------------
-   RESTORE LAST ENTRY
---------------------------------*/
-restoreBtn.addEventListener("click", ()=>{
-  if(!lastSavedData) return alert("No saved entry found!");
-  document.getElementById("customerName").value = lastSavedData.customerName;
-  document.getElementById("mobileNumber").value = lastSavedData.mobileNumber;
-  document.getElementById("city").value = lastSavedData.city;
-  document.getElementById("panNumber").value = lastSavedData.panNumber;
-  document.getElementById("ornament").value = lastSavedData.ornament;
-  document.getElementById("quantity").value = lastSavedData.quantity;
-  document.getElementById("rate").value = lastSavedData.rate;
-  document.getElementById("makingCharges").value = lastSavedData.makingCharges;
-  document.getElementById("stoneCharges").value = lastSavedData.stoneCharges;
-
-  [...mcTypeRadios].forEach(r => r.checked = (r.value === lastSavedData.mcType));
-  calculateTotal();
-});
+  saveBtn.style.display="inline-block";
+  printBtn.disabled=true;
+};
 </script>
-
 </body>
 </html>
