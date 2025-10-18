@@ -7,53 +7,57 @@
 <style>
   body {
     font-family: "Inter", sans-serif;
-    background: #536976;  /* fallback for old browsers */
-background: -webkit-linear-gradient(to right, #292E49, #536976);  /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to right, #292E49, #536976); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(to right, #292E49, #536976);
     margin: 0;
     padding: 0;
   }
   .container {
     max-width: 350px;
-    max height:auto;
-    margin: 30px auto;
-background: #ffd89b;  /* fallback for old browsers */
-background: -webkit-linear-gradient(to right, #19547b, #ffd89b);  /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to right, #19547b, #ffd89b); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
-
-
+    margin: 50px auto;
+    background: linear-gradient(to right, #19547b, #ffd89b);
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     text-align: center;
-    position: relative;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   }
-  .logo img { width: 150px; margin-bottom: 5px; }
-  h1 { font-size: 24px; margin-bottom: 2px; }
-  h3 { font-size: 16px; margin-bottom: 10px; color:black}
-  input { width: 90%; padding: 10px; margin: 15px auto; border: 1px solid #ccc; border-radius: 5px; font-size: 15px; }
-  button { width: 80%; padding: 12px; border: none; border-radius: 5px; font-size: 16px; background: #4f46e5; color: #fff; cursor: pointer; position: relative; }
-  button:hover { background: gold }
-  .login-text { display: inline-block; margin-left: 10px; font-weight: bold; color:black; vertical-align: middle; display: none; }
-
-  .error-msg { color: red; font-weight: bold; margin-bottom: 10px; display: none; }
-
+  .logo img { width: 150px; margin-bottom: 10px; }
+  h1 { margin: 5px 0; }
+  h3 { color: #000; margin-bottom: 10px; }
+  input {
+    width: 90%;
+    padding: 10px;
+    margin: 12px auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 15px;
+  }
+  button {
+    width: 80%;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    background: #4f46e5;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  button:hover { background: gold; color: #000; }
+  .error-msg { color: red; font-weight: bold; display: none; }
 </style>
+
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script>
-  // TODO: Replace the below config with your Firebase project config
   const firebaseConfig = {
-  apiKey: "AIzaSyDu5HrS1C-sL1mvTIpQ8Z_29l46SgmXugM",
-  authDomain: "getestimation-e0978.firebaseapp.com",
-  projectId: "getestimation-e0978",
-  storageBucket: "getestimation-e0978.firebasestorage.app",
-  messagingSenderId: "305257891317",
-  appId: "1:305257891317:web:5b20c8e5121d0fbb9a0cbc",
-  measurementId: "G-21C5H9BRQ7"
-};
+    apiKey: "AIzaSyDu5HrS1C-sL1mvTIpQ8Z_29l46SgmXugM",
+    authDomain: "getestimation-e0978.firebaseapp.com",
+    projectId: "getestimation-e0978",
+    storageBucket: "getestimation-e0978.appspot.com",
+    messagingSenderId: "305257891317",
+    appId: "1:305257891317:web:5b20c8e5121d0fbb9a0cbc",
+    measurementId: "G-21C5H9BRQ7"
+  };
   firebase.initializeApp(firebaseConfig);
 </script>
 </head>
@@ -63,47 +67,36 @@ background: linear-gradient(to right, #19547b, #ffd89b); /* W3C, IE 10+/ Edge, F
   <div class="logo"><img src="kc.png" alt="Logo"></div>
   <h1>Keshava Jewellers</h1>
   <h3>Employee Login</h3>
-  
-  <div class="error-msg" id="errorMsg"></div>
 
-  <input type="email" id="email" placeholder="Employee Email" required>
-  <input type="password" id="password" placeholder="Password" required>
-  <button id="loginBtn">Login<span class="login-text" id="loginText">Logging in...</span></button>
+  <div id="errorMsg" class="error-msg"></div>
+  <input type="email" id="email" placeholder="Employee Email">
+  <input type="password" id="password" placeholder="Password">
+  <button id="loginBtn">Login</button>
 </div>
 
 <script>
-const loginBtn = document.getElementById("loginBtn");
-const loginText = document.getElementById("loginText");
-const errorMsg = document.getElementById("errorMsg");
-
-loginBtn.addEventListener("click", () => {
+document.getElementById("loginBtn").addEventListener("click", async () => {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
-  if(!email || !password){
+  const errorMsg = document.getElementById("errorMsg");
+  
+  if(!email || !password) {
     errorMsg.style.display = "block";
     errorMsg.innerText = "Please enter both email and password.";
     return;
   }
-  loginBtn.disabled = true;
-  loginText.style.display = "inline-block";
-  errorMsg.style.display = "none";
 
-  firebase.auth().signInWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-      // Save login details in localStorage
-      localStorage.setItem("employeeEmail", email);
-      localStorage.setItem("loginTime", Date.now());
-      window.location.href = "estimation.html";
-    })
-    .catch((error) => {
-      loginBtn.disabled = false;
-      loginText.style.display = "none";
-      errorMsg.style.display = "block";
-      errorMsg.innerText = "Invalid login! Contact employer.";
-      console.error(error);
-    });
+  try {
+    await firebase.auth().signInWithEmailAndPassword(email, password);
+    localStorage.setItem("employeeEmail", email);
+    localStorage.setItem("loginTime", Date.now());
+    window.location.href = "estimation.html";
+  } catch (error) {
+    errorMsg.style.display = "block";
+    errorMsg.innerText = "Invalid login! Contact employer.";
+    console.error(error);
+  }
 });
 </script>
-
 </body>
 </html>
