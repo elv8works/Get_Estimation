@@ -1,58 +1,244 @@
+/* === MKS JEWELS - PREMIUM ESTIMATOR THEME === */
+
+/* 1. Theme Variables & Global Styles
+-------------------------------------------------- */
+:root {
+    --gold: #D4AF37;
+    --dark-charcoal: #1a1a1a;
+    --medium-gray: #2b2b2b;
+    --light-gray: #444;
+    --text-primary: #f0f0f0;
+    --text-secondary: #a0a0a0;
+    --success: #28a745;
+    --premium-font: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    background-color: #f0f2f5;
+    font-family: var(--premium-font);
+    background: radial-gradient(circle, var(--medium-gray) 0%, var(--dark-charcoal) 100%);
+    color: var(--text-primary);
     margin: 0;
     padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
+/* 2. Main Form Container
+-------------------------------------------------- */
 .form-container {
-    max-width: 800px;
-    margin: 0 auto;
-    background: #fff;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.header { text-align: center; border-bottom: 1px solid #eee; padding-bottom: 1rem; margin-bottom: 1rem; }
-.logo { max-width: 150px; margin-bottom: 1rem; }
-.meta-info { display: flex; justify-content: space-around; font-size: 0.9rem; color: #555; }
-
-form { display: grid; gap: 1.5rem; }
-label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333; }
-input[type="text"], input[type="number"], input[type="tel"] {
     width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    max-width: 800px;
+    background: var(--dark-charcoal);
+    padding: 2.5rem 3rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--light-gray);
+}
+
+/* 3. Header Section
+-------------------------------------------------- */
+.header {
+    text-align: center;
+    border-bottom: 1px solid var(--light-gray);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.logo {
+    max-width: 180px;
+    margin-bottom: 1.5rem;
+    filter: brightness(0) invert(1); /* Makes a black logo white */
+}
+
+.header h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--gold);
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+    margin: 0 0 1rem 0;
+}
+
+.meta-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* 4. Form Sections & Input Styling
+-------------------------------------------------- */
+form {
+    display: grid;
+    gap: 2rem;
+}
+
+.form-section h3 {
+    color: var(--gold);
+    border-bottom: 1px solid var(--light-gray);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+input[type="text"], 
+input[type="number"], 
+input[type="tel"] {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--light-gray);
+    border-radius: 6px;
     box-sizing: border-box;
-}
-input:read-only { background-color: #e9ecef; }
-
-.radio-group { display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; }
-.radio-group input { width: auto; }
-
-.total-section h3 { margin: 0; }
-.total-section input { font-size: 1.5rem; font-weight: bold; color: #007bff; text-align: right; }
-
-.button-group { display: flex; gap: 1rem; justify-content: flex-end; }
-button {
-    padding: 0.8rem 1.5rem;
-    border: none;
-    border-radius: 4px;
+    background-color: var(--medium-gray);
+    color: var(--text-primary);
     font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s;
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
-#saveBtn { background-color: #28a745; color: white; }
-#saveBtn:hover { background-color: #218838; }
-#printBtn { background-color: #007bff; color: white; }
-#printBtn:hover { background-color: #0056b3; }
-#printBtn:disabled { background-color: #ccc; cursor: not-allowed; }
-#restoreBtn { background-color: #ffc107; color: #212529; }
-#restoreBtn:hover { background-color: #e0a800; }
 
-/* Styles for PRINTING */
+input:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
+}
+
+/* 5. Custom Radio Buttons (Magical Touch!)
+-------------------------------------------------- */
+.radio-group {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.radio-group input[type="radio"] {
+    display: none; /* Hide the ugly default radio */
+}
+
+.radio-group label {
+    position: relative;
+    padding-left: 30px;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-weight: normal;
+}
+
+/* The custom circle */
+.radio-group label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--light-gray);
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+/* The inner dot when selected */
+.radio-group label::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    background: var(--gold);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.radio-group input[type="radio"]:checked + label::before {
+    border-color: var(--gold);
+}
+
+.radio-group input[type="radio"]:checked + label::after {
+    opacity: 1;
+}
+
+
+/* 6. Total & Buttons
+-------------------------------------------------- */
+.total-section input {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--gold);
+    text-align: right;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding-right: 0;
+}
+
+.total-section small {
+    display: block;
+    text-align: right;
+    color: var(--text-secondary);
+}
+
+.button-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+button {
+    padding: 0.8rem 1.8rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#saveBtn {
+    background: linear-gradient(45deg, var(--success), #218838);
+    color: white;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+}
+
+#printBtn {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+}
+
+#restoreBtn {
+    background: linear-gradient(45deg, #ffc107, #e0a800);
+    color: #212529;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+button:disabled {
+    background: var(--light-gray);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+
+/* 7. Print Styles (Unchanged but important)
+-------------------------------------------------- */
 .print-only { display: none; }
 
 @media print {
@@ -62,13 +248,13 @@ button {
         position: absolute;
         left: 0;
         top: 0;
-        width: 100%; /* Printer driver will manage width */
+        width: 100%;
         font-family: 'Courier New', Courier, monospace;
-        font-size: 10pt; /* Adjust for thermal printer */
+        font-size: 10pt;
         color: #000;
     }
     .print-only h3 { margin: 5px 0; }
-    .print-only .logo { max-width: 120px; }
+    .print-only .logo { max-width: 120px; filter: none; }
     .print-only table { width: 100%; border-collapse: collapse; }
     .print-only td { padding: 2px 0; }
     .print-only td:first-child { font-weight: bold; }
