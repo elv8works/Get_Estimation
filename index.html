@@ -4,81 +4,74 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Employee Login</title>
-  <link rel="stylesheet" href="login_form.css" />
+  <style>
+    /* Paste your login_form.css content here or keep inline styles */
+    body { font-family: Arial, sans-serif; background: #f8f8f8; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    .login-form { background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 350px; position: relative; }
+    .login-form input[type="text"], .login-form input[type="email"], .login-form input[type="password"] { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; }
+    .login-form input[type="submit"] { width: 100%; padding: 10px; background: #105652; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+    .login-form input[type="submit"]:hover { background: #0e4d4a; }
+    .login-form .email a { font-size: 12px; color: #105652; text-decoration: none; }
+    .login-form .email a:hover { text-decoration: underline; }
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js"></script>
+    /* Animated man figure (simplified) */
+    figure { position: absolute; bottom: -150px; left: calc(50% - 50px); width: 100px; height: 150px; }
+    .person-body { width: 40px; height: 60px; background: #105652; margin: auto; border-radius: 10px; }
+    .neck { width: 10px; height: 10px; background: #fddcaa; margin: auto; }
+    .head { width: 30px; height: 30px; background: #fddcaa; border-radius: 50%; margin: auto; position: relative; }
+    .eyes { width: 6px; height: 6px; background: #000; border-radius: 50%; position: absolute; top: 8px; left: 5px; }
+    .eyes::after { content:""; width:6px; height:6px; background:#000; border-radius:50%; position:absolute; left:14px; top:0; }
+    .mouth { width: 10px; height: 2px; background: #000; position: absolute; bottom: 5px; left: 10px; }
+    .hair { width: 30px; height: 5px; background: #333; border-radius: 5px; position: absolute; top: 0; left: 0; }
+  </style>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js"></script>
 </head>
 <body>
-  <form id="login-form" class="login-form" autocomplete="off" role="main">
-    <h1 class="a11y-hidden">Login Form</h1>
+  <form id="login-form" class="login-form" autocomplete="off">
+    <h1 style="display:none;">Login Form</h1>
 
     <!-- Employee Name -->
-    <div>
-      <label class="label-name">
-        <input type="text" class="text" name="employeeName" placeholder="Employee Name" required />
-        <span class="required">Employee Name</span>
-      </label>
-    </div>
+    <input type="text" name="employeeName" placeholder="Employee Name" required />
 
     <!-- Email -->
-    <div>
-      <label class="label-email">
-        <input type="email" class="text" name="email" placeholder="Email" required />
-        <span class="required">Email</span>
-      </label>
-    </div>
+    <input type="email" name="email" placeholder="Email" required />
 
     <!-- Password -->
-    <input type="checkbox" name="show-password" class="show-password a11y-hidden" id="show-password" />
-    <label class="label-show-password" for="show-password">
-      <span>Show Password</span>
-    </label>
-
-    <div>
-      <label class="label-password">
-        <input type="password" class="text" name="password" placeholder="Password" required />
-        <span class="required">Password</span>
-      </label>
-    </div>
+    <input type="password" name="password" placeholder="Password" required />
 
     <input type="submit" value="Log In" />
     <div class="email">
       <a href="#">Forgot password?</a>
     </div>
 
-    <!-- Animated figure -->
     <figure aria-hidden="true">
       <div class="person-body"></div>
-      <div class="neck skin"></div>
-      <div class="head skin">
+      <div class="neck"></div>
+      <div class="head">
         <div class="eyes"></div>
         <div class="mouth"></div>
       </div>
       <div class="hair"></div>
-      <div class="ears"></div>
-      <div class="shirt-1"></div>
-      <div class="shirt-2"></div>
     </figure>
   </form>
 
   <script>
-      const firebaseConfig = {
+    // 🔥 Firebase config
+    const firebaseConfig = {
       apiKey: "AIzaSyDu5HrS1C-sL1mvTIpQ8Z_29l46SgmXugM",
       authDomain: "getestimation-e0978.firebaseapp.com",
       projectId: "getestimation-e0978",
-      storageBucket: "getestimation-e0978.firebasestorage.app",
+      storageBucket: "getestimation-e0978.appspot.com",
       messagingSenderId: "305257891317",
-      appId: "1:305257891317:web:5b20c8e5121d0fbb9a0cbc",
-      measurementId: "G-21C5H9BRQ7"
+      appId: "1:305257891317:web:5b20c8e5121d0fbb9a0cbc"
     };
-
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
     const form = document.getElementById("login-form");
-
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const employeeName = form.employeeName.value.trim();
@@ -89,14 +82,14 @@
         await auth.signInWithEmailAndPassword(email, password);
         sessionStorage.setItem("employeeName", employeeName);
         sessionStorage.setItem("employeeEmail", email);
-        sessionStorage.setItem("loggedIn", "true"); // important
+        sessionStorage.setItem("loggedIn", "true");
         window.location.href = "estimation.html";
       } catch (err) {
         alert("Login failed: " + err.message);
       }
     });
 
-    // Redirect already logged-in users
+    // Redirect if already logged in
     auth.onAuthStateChanged((user) => {
       if (user) window.location.href = "estimation.html";
     });
