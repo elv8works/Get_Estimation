@@ -282,11 +282,13 @@ showPasswordToggle.addEventListener('click', () => {
         // Main Details
         document.getElementById('print-customer').textContent = document.getElementById('customerName').value;
         document.getElementById('print-city').textContent = document.getElementById('city').value || 'N/A'; // Added this new field
-        document.getElementById('print-mobile').textContent = mask(document.getElementById('mobileNumber').value);
+        document.getElementById('print-mobile').textContent = mask(document.getElementById('mobileNumber').value).replace(/x/g, ''); // Removes 'x's from the masked output
         document.getElementById('print-ornament').textContent = document.getElementById('ornament').value;
         document.getElementById('print-qty').textContent = elements.quantity.value;
         document.getElementById('print-rate').textContent = elements.rate.value;
-        document.getElementById('print-mcvalue').textContent = elements.makingCharges.value;
+        // This is the NEW code
+        const mcTypeSelected = document.querySelector('input[name="mcType"]:checked').value;
+        document.getElementById('print-mcvalue').textContent = `${elements.makingCharges.value} ${mcTypeSelected === 'grams' ? 'gms' : '%'}`;
         document.getElementById('print-stone').textContent = elements.stoneCharges.value || '0';
         
         // Total and ID
