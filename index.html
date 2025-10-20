@@ -1,55 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Keshava Jewellers - Employee Login</title>
-<style>
-  body {
-    font-family: "Inter", sans-serif;
-    background: linear-gradient(to right, #292E49, #536976);
-    margin: 0;
-    padding: 0;
-  }
-  .container {
-    max-width: 350px;
-    margin: 50px auto;
-    background: linear-gradient(to right, #19547b, #ffd89b);
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  }
-  .logo img { width: 150px; margin-bottom: 10px; }
-  h1 { margin: 5px 0; }
-  h3 { color: #000; margin-bottom: 10px; }
-  input {
-    width: 90%;
-    padding: 10px;
-    margin: 12px auto;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 15px;
-  }
-  button {
-    width: 80%;
-    padding: 12px;
-    border: none;
-    border-radius: 5px;
-    background: #4f46e5;
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  button:hover { background: gold; color: #000; }
-  .error-msg { color: red; font-weight: bold; display: none; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Employee Login</title>
+  <link rel="stylesheet" href="login_form.css" />
 
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script>
-  const firebaseConfig = {
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js"></script>
+</head>
+<body>
+  <form id="login-form" class="login-form" autocomplete="off" role="main">
+    <h1 class="a11y-hidden">Login Form</h1>
+
+    <!-- Employee Name -->
+    <div>
+      <label class="label-name">
+        <input type="text" class="text" name="employeeName" placeholder="Employee Name" tabindex="0" required />
+        <span class="required">Employee Name</span>
+      </label>
+    </div>
+
+    <!-- Email -->
+    <div>
+      <label class="label-email">
+        <input type="email" class="text" name="email" placeholder="Email" tabindex="1" required />
+        <span class="required">Email</span>
+      </label>
+    </div>
+
+    <!-- Password -->
+    <input type="checkbox" name="show-password" class="show-password a11y-hidden" id="show-password" tabindex="3" />
+    <label class="label-show-password" for="show-password">
+      <span>Show Password</span>
+    </label>
+
+    <div>
+      <label class="label-password">
+        <input type="password" class="text" name="password" placeholder="Password" tabindex="2" required />
+        <span class="required">Password</span>
+      </label>
+    </div>
+
+    <input type="submit" value="Log In" />
+    <div class="email">
+      <a href="#">Forgot password?</a>
+    </div>
+
+    <figure aria-hidden="true">
+      <div class="person-body"></div>
+      <div class="neck skin"></div>
+      <div class="head skin">
+        <div class="eyes"></div>
+        <div class="mouth"></div>
+      </div>
+      <div class="hair"></div>
+      <div class="ears"></div>
+      <div class="shirt-1"></div>
+      <div class="shirt-2"></div>
+    </figure>
+  </form>
+
+  <script>
+    // 🔥 Replace with your own Firebase config
+    const firebaseConfig = {
     apiKey: "AIzaSyDu5HrS1C-sL1mvTIpQ8Z_29l46SgmXugM",
     authDomain: "getestimation-e0978.firebaseapp.com",
     projectId: "getestimation-e0978",
@@ -58,45 +73,33 @@
     appId: "1:305257891317:web:5b20c8e5121d0fbb9a0cbc",
     measurementId: "G-21C5H9BRQ7"
   };
-  firebase.initializeApp(firebaseConfig);
-</script>
-</head>
-<body>
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
-<div class="container">
-  <div class="logo"><img src="kc.png" alt="Logo"></div>
-  <h1>Keshava Jewellers</h1>
-  <h3>Employee Login</h3>
+    const form = document.getElementById("login-form");
 
-  <div id="errorMsg" class="error-msg"></div>
-  <input type="email" id="email" placeholder="Employee Email">
-  <input type="password" id="password" placeholder="Password">
-  <button id="loginBtn">Login</button>
-</div>
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const employeeName = form.employeeName.value.trim();
+      const email = form.email.value.trim();
+      const password = form.password.value.trim();
 
-<script>
-document.getElementById("loginBtn").addEventListener("click", async () => {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const errorMsg = document.getElementById("errorMsg");
-  
-  if(!email || !password) {
-    errorMsg.style.display = "block";
-    errorMsg.innerText = "Please enter both email and password.";
-    return;
-  }
+      try {
+        const userCred = await auth.signInWithEmailAndPassword(email, password);
+        sessionStorage.setItem("employeeName", employeeName);
+        sessionStorage.setItem("employeeEmail", email);
+        window.location.href = "estimation.html";
+      } catch (err) {
+        alert("Login failed: " + err.message);
+      }
+    });
 
-  try {
-    await firebase.auth().signInWithEmailAndPassword(email, password);
-    localStorage.setItem("employeeEmail", email);
-    localStorage.setItem("loginTime", Date.now());
-    window.location.href = "estimation.html";
-  } catch (error) {
-    errorMsg.style.display = "block";
-    errorMsg.innerText = "Invalid login! Contact employer.";
-    console.error(error);
-  }
-});
-</script>
+    // Prevent already logged-in users from seeing login page again
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        window.location.href = "estimation.html";
+      }
+    });
+  </script>
 </body>
 </html>
