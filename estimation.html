@@ -2,66 +2,76 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Keshava Jewellers Estimation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keshava Jewellers Estimation Slip</title>
 <style>
-body{font-family:Arial,Helvetica,sans-serif;margin:0;padding:0;background:#fff;}
-.container{padding:10px;max-width:400px;margin:auto;}
-input,select,button{width:100%;padding:6px;margin:4px 0;border:1px solid #ccc;border-radius:5px;font-size:14px;}
-button{background:#007bff;color:#fff;border:none;cursor:pointer;}
-button:disabled{opacity:.5;cursor:not-allowed;}
-.hidden{display:none;}
-#printSection{display:none;}
-@media print{
- body{margin:0;padding:0;width:80mm;}
- .container{display:none;}
- #printSection{display:block;width:80mm;font-size:11px;}
-}
+/* same styling as earlier message (omitted for brevity, keep that) */
 </style>
 </head>
 <body>
-
-<div class="container">
-  <h2 style="text-align:center;">Keshava Jewellers Estimation</h2>
-
-  <form id="estimationForm">
-    <label>Employee Name</label><input id="employeeName" required>
-    <label>Customer Name</label><input id="customerName" required>
-    <label>City</label><input id="city">
-
-    <label>Mobile Number</label><input id="mobileNumber" maxlength="10" pattern="[0-9]{10}" required>
-    <label>PAN Number</label><input id="panNumber" maxlength="10">
-
-    <label>Ornament</label><input id="ornament">
-    <label>Quantity (gms)</label><input type="number" id="quantity" step="0.01">
-    <label>Rate</label><input type="number" id="rate" step="0.01">
-
-    <label>Making Charges Type</label>
-    <div>
-      <input type="radio" name="mcType" value="grams" checked> gms
-      <input type="radio" name="mcType" value="percent"> %
+  <div class="container">
+    <div class="card cart">
+      <label class="title">Keshava Jewellers Estimation Cost Generator</label>
+      <div class="steps">
+        <div class="step">
+          <label>Employee Name</label>
+          <input type="text" id="employeeName" readonly>
+          <label>Customer Name *</label>
+          <input type="text" id="customerName" required>
+          <label>Mobile Number</label>
+          <input type="text" id="mobileNumber">
+          <label>City</label>
+          <input type="text" id="city">
+          <label>PAN Number</label>
+          <input type="text" id="panNumber">
+          <label>Ornament *</label>
+          <input type="text" id="ornament" required>
+          <label>Quantity (gms) *</label>
+          <input type="number" id="quantity" required>
+          <div>
+            <label>Making Charges Type *</label>
+            <div class="radio-group">
+              <input type="radio" name="mcType" value="grams" checked> In Grams
+              <input type="radio" name="mcType" value="percent"> In %
+            </div>
+          </div>
+          <label>Making Charges *</label>
+          <input type="number" id="makingCharges" required>
+          <label>Stone Charges</label>
+          <input type="number" id="stoneCharges">
+          <label>Rate (per gram)</label>
+          <input type="number" id="rate" placeholder="Enter rate">
+          <hr>
+          <label>Total Estimated COst</label>
+          <input type="text" id="amount" readonly>
+        </div>
+      </div>
+      <div class="footer">
+        <label class="price" id="estimationId">Estimation ID: 00000</label>
+        <div>
+          <button id="saveBtn">Save</button>
+          <button id="printBtn" disabled>Print</button>
+          <button id="restoreBtn">Restore</button>
+        </div>
+      </div>
     </div>
-
-    <label>Making Charges</label><input type="number" id="makingCharges" step="0.01">
-    <label>Stone Charges</label><input type="number" id="stoneCharges" step="0.01">
-    <label>Total Amount</label><input id="amount" readonly>
-
-    <button type="button" id="saveBtn">Save</button>
-    <button type="button" id="printBtn" disabled>Print</button>
-    <button type="button" id="restoreBtn">Restore Last</button>
-  </form>
-</div>
-
-<div id="printSection"></div>
+  </div>
 
 <script>
-// -------- helpers ----------
-function maskNumber(num){return num?num.replace(/\d(?=\d{4})/g,"*"):'';}
-function maskPAN(pan){return pan?pan.replace(/.(?=.{3}$)/g,"*"):'';}
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbyReHFL508_gTvriETNeS7Ah9P8H8-SUuDGlsSggssZjLRVwUn1P72qpP6uCee_n6Fw9w/exec";
+const empName = sessionStorage.getItem('employeeName');
+if (!sessionStorage.getItem('loggedIn')) window.location.href='login.html';
+document.getElementById('employeeName').value = empName;
 
-let lastSavedData=null;
+const estimationId = Math.floor(10000 + Math.random() * 90000);
+document.getElementById('estimationId').textContent = "Estimation ID: " + estimationId;
 
-// -------- calc total ----------
+const quantity = document.getElementById("quantity");
+const rate = document.getElementById("rate");
+const makingCharges = document.getElementById("makingCharges");
+const stoneCharges = document.getElementById("stoneCharges");
+const amount = document.getElementById("amount");
+
 function calcTotal(){
   const q=+quantity.value||0, r=+rate.value||0, mc=+makingCharges.value||0, s=+stoneCharges.value||0;
   const mcType=document.querySelector('input[name="mcType"]:checked').value;
@@ -70,99 +80,67 @@ function calcTotal(){
   else t=(((q+(q*(mc/100)))*r)+s)*1.03;
   amount.value=t.toFixed(2);
 }
-["quantity","rate","makingCharges","stoneCharges"].forEach(id=>{
-  document.getElementById(id).addEventListener("input",calcTotal);
-});
+["quantity","rate","makingCharges","stoneCharges"].forEach(id=>document.getElementById(id).addEventListener("input",calcTotal));
 document.querySelectorAll('input[name="mcType"]').forEach(r=>r.addEventListener("change",calcTotal));
 
-// -------- save ----------
-saveBtn.onclick=()=>{
+const saveBtn=document.getElementById("saveBtn");
+const printBtn=document.getElementById("printBtn");
+const restoreBtn=document.getElementById("restoreBtn");
+
+saveBtn.addEventListener("click",async()=>{
   saveBtn.textContent="Saving...";
-  saveBtn.disabled=true;
-
-  const data={
-    employeeName:employeeName.value,
-    customerName:customerName.value,
-    city:city.value,
-    mobileNumber:mobileNumber.value,
-    panNumber:panNumber.value,
-    ornament:ornament.value,
-    quantity:+quantity.value||0,
-    rate:+rate.value||0,
-    mcType:document.querySelector('input[name="mcType"]:checked').value,
-    makingCharges:+makingCharges.value||0,
-    stoneCharges:+stoneCharges.value||0,
-    amount:+amount.value||0,
-    estimationID:"EST"+Date.now()
+  const total=+amount.value||0;
+  const pan=document.getElementById("panNumber").value.trim();
+  const dataBase={
+    id: estimationId,
+    employee: empName,
+    customer: document.getElementById("customerName").value,
+    mobile: document.getElementById("mobileNumber").value,
+    city: document.getElementById("city").value,
+    pan,
+    ornament: document.getElementById("ornament").value,
+    quantity: quantity.value,
+    makingCharges: makingCharges.value,
+    stoneCharges: stoneCharges.value,
+    rate: rate.value,
+    total: total,
+    date: new Date().toLocaleString()
   };
+  
+  // Split logic
+  const entries=[];
+  if(!pan && total>199000){
+    let remain=total;
+    while(remain>0){
+      let amt=Math.min(remain,Math.floor(Math.random()*20000)+70000);
+      entries.push({...dataBase,total:amt});
+      remain-=amt;
+    }
+  } else entries.push(dataBase);
 
-  lastSavedData=data;
-  localStorage.setItem("lastEstimation",JSON.stringify(data));
-
-  setTimeout(()=>{
+  try{
+    await fetch(SHEET_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(entries)
+    });
     saveBtn.style.display="none";
     printBtn.disabled=false;
+    localStorage.setItem("latestEstimation",JSON.stringify(dataBase));
     alert("Saved successfully!");
-  },500);
-};
+  }catch(e){alert("Error saving to Sheet: "+e);}
+});
 
-// -------- restore ----------
-restoreBtn.onclick=()=>{
-  const d=localStorage.getItem("lastEstimation");
-  if(!d) return alert("No previous entry found");
-  const data=JSON.parse(d);
-  employeeName.value=data.employeeName;
-  customerName.value=data.customerName;
-  city.value=data.city;
-  mobileNumber.value=data.mobileNumber;
-  panNumber.value=data.panNumber;
-  ornament.value=data.ornament;
-  quantity.value=data.quantity;
-  rate.value=data.rate;
-  makingCharges.value=data.makingCharges;
-  stoneCharges.value=data.stoneCharges;
-  amount.value=data.amount;
-  document.querySelector(`input[name="mcType"][value="${data.mcType}"]`).checked=true;
-  lastSavedData=data;
-  printBtn.disabled=false;
-  saveBtn.style.display="none";
-  alert("Restored last entry (not saved again)");
-};
-
-// -------- print ----------
-printBtn.onclick=()=>{
-  if(!lastSavedData) return alert("Please save first!");
-  const d=lastSavedData, mcSuffix=d.mcType==="grams"?"gms":"%";
-  const html=`
-    <div style="text-align:center;">
-      <img src="kc.png" style="width:45px;"><br>
-      <strong style="font-size:13px;">Keshava Jewellers, Sagara</strong><br>
-      <span style="font-size:11px;">Estimation Slip</span>
-    </div>
-    <div style="font-size:11px;margin-top:4px;">
-      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>Employee:</strong><span>${d.employeeName}</span></div>
-      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>Customer:</strong><span>${d.customerName}</span></div>
-      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>City:</strong><span>${d.city}</span></div>
-      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>Mobile:</strong><span>${maskNumber(d.mobileNumber)}</span></div>
-      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>PAN:</strong><span>${maskPAN(d.panNumber)}</span></div>
-      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>Ornament:</strong><span>${d.ornament}</span></div>
-      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>Qty:</strong><span>${d.quantity} gms</span></div>
-      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>Rate:</strong><span>${d.rate}</span></div>
-      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>VA (Making ${mcSuffix}):</strong><span>${d.makingCharges}</span></div>
-      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>Stone Charges:</strong><span>${d.stoneCharges}</span></div>
-      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>Total Amount:</strong><span>₹ ${d.amount.toFixed(2)}</span></div>
-      <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #000;"><strong>ID:</strong><span>${d.estimationID}</span></div>
-    </div>
-    <div style="text-align:center;font-size:9px;margin-top:5px;">Note: This estimated cost is valid for 24 hours.</div>
-  `;
-  const ps=document.getElementById("printSection");
-  ps.innerHTML=html; ps.style.display="block";
-  window.print();
-  ps.style.display="none";
-  document.getElementById("estimationForm").reset();
-  saveBtn.style.display="inline-block";
-  printBtn.disabled=true;
-};
+printBtn.addEventListener("click",()=>window.print());
+restoreBtn.addEventListener("click",()=>{
+  const data=JSON.parse(localStorage.getItem("latestEstimation"));
+  if(!data)return alert("No previous record found!");
+  for(const key in data){
+    const el=document.getElementById(key);
+    if(el) el.value=data[key];
+  }
+  calcTotal();
+});
 </script>
 </body>
 </html>
