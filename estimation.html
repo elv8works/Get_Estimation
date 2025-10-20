@@ -75,30 +75,77 @@
     </div>
 
     <div id="print-slip" class="print-only">
-        <img src="https://via.placeholder.com/150x50.png?text=MKS+Jewels" alt="Shop Logo" class="logo">
-        <h3>** ESTIMATION SLIP **</h3>
-        <p>--------------------------------</p>
-        <p><strong>ID:</strong> <span id="print-id"></span></p>
-        <p><strong>Date:</strong> <span id="print-date"></span></p>
-        <p><strong>Employee:</strong> <span id="print-employee"></span></p>
-        <p>--------------------------------</p>
-        <p><strong>Customer:</strong> <span id="print-customer"></span></p>
-        <p><strong>Mobile:</strong> <span id="print-mobile"></span></p>
-        <p><strong>PAN:</strong> <span id="print-pan"></span></p>
-        <p>--------------------------------</p>
-        <table>
-            <tr><td><strong>Ornament:</strong></td><td><span id="print-ornament"></span></td></tr>
-            <tr><td><strong>Gross Wt:</strong></td><td><span id="print-qty"></span> gms</td></tr>
-            <tr><td><strong>Gold Rate:</strong></td><td>₹<span id="print-rate"></span></td></tr>
-            <tr><td><strong>MC Type:</strong></td><td><span id="print-mctype"></span></td></tr>
-            <tr><td><strong>MC Value:</strong></td><td><span id="print-mcvalue"></span></td></tr>
-            <tr><td><strong>Stones:</strong></td><td>₹<span id="print-stone"></span></td></tr>
-        </table>
-        <p>================================</p>
-        <h3>TOTAL: ₹<span id="print-total"></span></h3>
-        <p><small>(Incl. 3% GST)</small></p>
-        <p>--- Thank You! ---</p>
-    </div>
+    <header class="print-header">
+        <img src="https://i.imgur.com/r4L9y2J.png" alt="Shop Logo" class="logo">
+        <h3>Keshava Jewellers, Sagara</h3>
+        <p>elv8.works</p>
+        <h4>Estimation Slip</h4>
+    </header>
+
+    <main class="print-main">
+        <div class="print-row">
+            <span class="label">Employee:</span>
+            <span class="filler"></span>
+            <span class="value" id="print-employee"></span>
+        </div>
+        <div class="print-row">
+            <span class="label">Customer:</span>
+            <span class="filler"></span>
+            <span class="value" id="print-customer"></span>
+        </div>
+        <div class="print-row">
+            <span class="label">City:</span>
+            <span class="filler"></span>
+            <span class="value" id="print-city"></span>
+        </div>
+        <div class="print-row">
+            <span class="label">Mobile:</span>
+            <span class="filler"></span>
+            <span class="value" id="print-mobile"></span>
+        </div>
+        <div class="print-row">
+            <span class="label">Ornament:</span>
+            <span class="filler"></span>
+            <span class="value" id="print-ornament"></span>
+        </div>
+        <div class="print-row">
+            <span class="label">Quantity:</span>
+            <span class="filler"></span>
+            <span class="value"><span id="print-qty"></span> gms</span>
+        </div>
+        <div class="print-row">
+            <span class="label">Rate:</span>
+            <span class="filler"></span>
+            <span class="value" id="print-rate"></span>
+        </div>
+        <div class="print-row">
+            <span class="label">Making Charges:</span>
+            <span class="filler"></span>
+            <span class="value" id="print-mcvalue"></span>
+        </div>
+        <div class="print-row">
+            <span class="label">Stone Charges:</span>
+            <span class="filler"></span>
+            <span class="value" id="print-stone"></span>
+        </div>
+        
+        <div class="print-row total-row">
+            <span class="label">Total Amount:</span>
+            <span class="filler"></span>
+            <span class="value">₹ <span id="print-total"></span></span>
+        </div>
+
+        <div class="print-row">
+            <span class="label">Estimation ID:</span>
+            <span class="filler"></span>
+            <span class="value" id="print-id"></span>
+        </div>
+    </main>
+
+    <footer class="print-footer">
+        <p>Note: This estimated cost is valid for 24 hours.</p>
+    </footer>
+</div>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
