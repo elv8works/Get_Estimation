@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Employee Login</title>
   <style>
-    /* Paste your login_form.css content here or keep inline styles */
     body { font-family: Arial, sans-serif; background: #f8f8f8; display: flex; justify-content: center; align-items: center; height: 100vh; }
     .login-form { background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 350px; position: relative; }
     .login-form input[type="text"], .login-form input[type="email"], .login-form input[type="password"] { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; }
@@ -14,7 +13,6 @@
     .login-form .email a { font-size: 12px; color: #105652; text-decoration: none; }
     .login-form .email a:hover { text-decoration: underline; }
 
-    /* Animated man figure (simplified) */
     figure { position: absolute; bottom: -150px; left: calc(50% - 50px); width: 100px; height: 150px; }
     .person-body { width: 40px; height: 60px; background: #105652; margin: auto; border-radius: 10px; }
     .neck { width: 10px; height: 10px; background: #fddcaa; margin: auto; }
@@ -24,24 +22,14 @@
     .mouth { width: 10px; height: 2px; background: #000; position: absolute; bottom: 5px; left: 10px; }
     .hair { width: 30px; height: 5px; background: #333; border-radius: 5px; position: absolute; top: 0; left: 0; }
   </style>
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js"></script>
 </head>
 <body>
-  <form id="login-form" class="login-form" autocomplete="off">
+  <form id="login-form" class="login-form">
     <h1 style="display:none;">Login Form</h1>
 
-    <!-- Employee Name -->
     <input type="text" name="employeeName" placeholder="Employee Name" required />
-
-    <!-- Email -->
     <input type="email" name="email" placeholder="Email" required />
-
-    <!-- Password -->
     <input type="password" name="password" placeholder="Password" required />
-
     <input type="submit" value="Log In" />
     <div class="email">
       <a href="#">Forgot password?</a>
@@ -59,40 +47,35 @@
   </form>
 
   <script>
-    // 🔥 Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyDu5HrS1C-sL1mvTIpQ8Z_29l46SgmXugM",
-      authDomain: "getestimation-e0978.firebaseapp.com",
-      projectId: "getestimation-e0978",
-      storageBucket: "getestimation-e0978.appspot.com",
-      messagingSenderId: "305257891317",
-      appId: "1:305257891317:web:5b20c8e5121d0fbb9a0cbc"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-
     const form = document.getElementById("login-form");
-    form.addEventListener("submit", async (e) => {
+
+    // ✅ Hardcoded credentials (example)
+    const users = [
+      { name: "Sagar", email: "sagar@example.com", password: "Keshava@2025" },
+      { name: "Test", email: "test@example.com", password: "123456" }
+    ];
+
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
       const employeeName = form.employeeName.value.trim();
       const email = form.email.value.trim();
       const password = form.password.value.trim();
 
-      try {
-        await auth.signInWithEmailAndPassword(email, password);
+      const user = users.find(u => u.email === email && u.password === password);
+      if (user) {
         sessionStorage.setItem("employeeName", employeeName);
         sessionStorage.setItem("employeeEmail", email);
         sessionStorage.setItem("loggedIn", "true");
         window.location.href = "estimation.html";
-      } catch (err) {
-        alert("Login failed: " + err.message);
+      } else {
+        alert("Invalid email or password!");
       }
     });
 
     // Redirect if already logged in
-    auth.onAuthStateChanged((user) => {
-      if (user) window.location.href = "estimation.html";
-    });
+    if (sessionStorage.getItem("loggedIn")) {
+      window.location.href = "estimation.html";
+    }
   </script>
 </body>
 </html>
