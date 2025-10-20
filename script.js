@@ -11,7 +11,7 @@ const firebaseConfig = {
   measurementId: "G-KGTDPSTGLH"
 };
 
-const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyC-NIj62N-QdaVysFFzctbUeu29lk-yuvajlgQNrdex95qAfDyHkgKaLsaEcaPwSHHHw/exec';
 
 // =================================================================
 // =================== DO NOT EDIT BELOW THIS LINE ===================
