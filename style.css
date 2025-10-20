@@ -245,6 +245,12 @@ button:disabled {
     display: none; 
 }
 
+/* 7. Print Styles (FIXED)
+-------------------------------------------------- */
+.print-only { 
+    display: none; 
+}
+
 @media print {
     body * { 
         visibility: hidden; 
@@ -253,6 +259,7 @@ button:disabled {
         visibility: visible; 
     }
     .print-only {
+        display: block; /* <-- THIS IS THE FIX */
         position: absolute;
         left: 0;
         top: 0;
