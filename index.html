@@ -17,7 +17,7 @@
     <!-- Employee Name -->
     <div>
       <label class="label-name">
-        <input type="text" class="text" name="employeeName" placeholder="Employee Name" tabindex="0" required />
+        <input type="text" class="text" name="employeeName" placeholder="Employee Name" required />
         <span class="required">Employee Name</span>
       </label>
     </div>
@@ -25,20 +25,20 @@
     <!-- Email -->
     <div>
       <label class="label-email">
-        <input type="email" class="text" name="email" placeholder="Email" tabindex="1" required />
+        <input type="email" class="text" name="email" placeholder="Email" required />
         <span class="required">Email</span>
       </label>
     </div>
 
     <!-- Password -->
-    <input type="checkbox" name="show-password" class="show-password a11y-hidden" id="show-password" tabindex="3" />
+    <input type="checkbox" name="show-password" class="show-password a11y-hidden" id="show-password" />
     <label class="label-show-password" for="show-password">
       <span>Show Password</span>
     </label>
 
     <div>
       <label class="label-password">
-        <input type="password" class="text" name="password" placeholder="Password" tabindex="2" required />
+        <input type="password" class="text" name="password" placeholder="Password" required />
         <span class="required">Password</span>
       </label>
     </div>
@@ -48,6 +48,7 @@
       <a href="#">Forgot password?</a>
     </div>
 
+    <!-- Animated figure -->
     <figure aria-hidden="true">
       <div class="person-body"></div>
       <div class="neck skin"></div>
@@ -63,16 +64,16 @@
   </form>
 
   <script>
-    // 🔥 Replace with your own Firebase config
-    const firebaseConfig = {
-    apiKey: "AIzaSyDu5HrS1C-sL1mvTIpQ8Z_29l46SgmXugM",
-    authDomain: "getestimation-e0978.firebaseapp.com",
-    projectId: "getestimation-e0978",
-    storageBucket: "getestimation-e0978.appspot.com",
-    messagingSenderId: "305257891317",
-    appId: "1:305257891317:web:5b20c8e5121d0fbb9a0cbc",
-    measurementId: "G-21C5H9BRQ7"
-  };
+      const firebaseConfig = {
+      apiKey: "AIzaSyDu5HrS1C-sL1mvTIpQ8Z_29l46SgmXugM",
+      authDomain: "getestimation-e0978.firebaseapp.com",
+      projectId: "getestimation-e0978",
+      storageBucket: "getestimation-e0978.firebasestorage.app",
+      messagingSenderId: "305257891317",
+      appId: "1:305257891317:web:5b20c8e5121d0fbb9a0cbc",
+      measurementId: "G-21C5H9BRQ7"
+    };
+
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
@@ -85,20 +86,19 @@
       const password = form.password.value.trim();
 
       try {
-        const userCred = await auth.signInWithEmailAndPassword(email, password);
+        await auth.signInWithEmailAndPassword(email, password);
         sessionStorage.setItem("employeeName", employeeName);
         sessionStorage.setItem("employeeEmail", email);
+        sessionStorage.setItem("loggedIn", "true"); // important
         window.location.href = "estimation.html";
       } catch (err) {
         alert("Login failed: " + err.message);
       }
     });
 
-    // Prevent already logged-in users from seeing login page again
+    // Redirect already logged-in users
     auth.onAuthStateChanged((user) => {
-      if (user) {
-        window.location.href = "estimation.html";
-      }
+      if (user) window.location.href = "estimation.html";
     });
   </script>
 </body>
