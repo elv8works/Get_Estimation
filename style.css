@@ -247,6 +247,8 @@ button:disabled {
 
 /* 7. Print Styles (FIXED)
 -------------------------------------------------- */
+/* 7. Print Styles (Revised with Underline Dots)
+-------------------------------------------------- */
 .print-only { 
     display: none; 
 }
@@ -259,85 +261,87 @@ button:disabled {
         visibility: visible; 
     }
     .print-only {
-        display: block; /* <-- THIS IS THE FIX */
+        display: block; 
         position: absolute;
         left: 0;
         top: 0;
         width: 100%;
         max-width: 80mm; /* Standard thermal printer width */
-        font-family: 'Courier New', monospace;
+        font-family: 'Courier New', monospace; /* Classic receipt font */
         font-size: 10pt;
         color: #000;
         padding: 10px;
+        box-sizing: border-box; /* Include padding in width */
     }
     
     .print-header {
         text-align: center;
-        margin-bottom: 20px;
+        margin-bottom: 15px;
     }
 
-    .print-header .logo {
-        max-width: 60px; /* Adjust size for small receipt */
-        margin-bottom: 5px;
-        filter: none; /* Reset filter for printing */
+    .print-header h3 { 
+        font-size: 13pt; 
+        margin: 5px 0 2px 0;
     }
-
-    .print-header h3, .print-header p, .print-header h4 {
-        margin: 2px 0;
+    .print-header p { 
+        font-size: 9pt; 
+        margin: 0 0 10px 0;
     }
-
-    .print-header h3 { font-size: 12pt; }
-    .print-header p { font-size: 9pt; }
     .print-header h4 {
-        font-size: 11pt;
-        border-top: 1px dashed #000;
-        border-bottom: 1px dashed #000;
-        padding: 5px 0;
-        margin-top: 10px;
+        font-size: 12pt;
+        margin: 10px 0;
+    }
+
+    .divider {
+        border-bottom: 2px dashed #000;
+        margin: 10px 0;
     }
 
     .print-main {
-        margin-bottom: 20px;
+        margin-bottom: 15px;
     }
 
     .print-row {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 10px;
-        line-height: 1.4;
+        align-items: baseline; /* Align text baselines */
+        margin-bottom: 8px; /* Tighter spacing */
+        line-height: 1.2;
     }
 
     .print-row .label {
         font-weight: bold;
         white-space: nowrap;
         padding-right: 5px;
+        flex-shrink: 0; /* Prevent label from shrinking */
     }
     
-    .print-row .value {
-        white-space: nowrap;
-        padding-left: 5px;
-    }
-
-    /* This is the magic for the dotted lines */
-    .print-row .filler {
-        width: 100%;
-        border-bottom: 2px dotted #555;
-        margin: 0 5px;
-        position: relative;
-        bottom: 5px; /* Aligns dots vertically */
+    /* The magic for dotted underlines */
+    .print-row .value.underline {
+        flex-grow: 1; /* Allows value to take up remaining space */
+        text-align: right; /* Aligns content to the right */
+        text-decoration: underline dotted; /* Dotted underline */
+        text-underline-offset: 3px; /* Space between text and dots */
+        white-space: normal; /* Allow text to wrap if it's very long, though typically not for slips */
+        word-break: break-all; /* Break long words if necessary */
     }
 
     .total-row {
         font-weight: bold;
         font-size: 12pt;
         margin-top: 15px;
+        margin-bottom: 15px; /* More space for total */
+    }
+    
+    .total-row .value.underline {
+        text-underline-offset: 5px; /* Slightly more prominent underline for total */
     }
 
     .print-footer {
         text-align: center;
         font-size: 9pt;
-        border-top: 1px dashed #000;
+        border-top: 2px dashed #000;
         padding-top: 10px;
-        margin-top: 20px;
+        margin-top: 15px;
     }
 }
