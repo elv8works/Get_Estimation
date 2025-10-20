@@ -1,207 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Keshava Jewellers Estimation Slip</title>
-<style>
-/* ===== Basic Styles ===== */
-body {
-  font-family: Arial, sans-serif;
-  background: #f2f4f8;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 20px;
-}
-.container {
-  width: 500px;
-}
-.card {
-  background: rgb(255,250,235);
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
-  margin-bottom: 20px;
-}
-.card label {
-  display: block;
-  margin: 8px 0 2px;
-  font-weight: 600;
-}
-.card input[type=text], .card input[type=number] {
-  width: 100%;
-  padding: 6px 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  border: 1px solid #105652;
-}
-.radio-group input {
-  margin-right: 5px;
-}
-.footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.footer button {
-  padding: 8px 12px;
-  margin-left: 5px;
-  border-radius: 5px;
-  border: 1px solid #105652;
-  background: rgba(16,86,82,0.55);
-  color: #000;
-  font-weight: 600;
-  cursor: pointer;
-}
-.footer button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.price {
-  font-weight: 900;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Estimation Slip</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="container">
-  <div class="card cart">
-    <label>Keshava Jewellers Estimation Cost Generator</label>
+    <div class="form-container">
+        <div class="header">
+            <img src="https://via.placeholder.com/150x50.png?text=MKS+Jewels" alt="Shop Logo" class="logo">
+            <h2>Estimation Slip</h2>
+            <div class="meta-info">
+                <p><strong>ID:</strong> <span id="estimation-id"></span></p>
+                <p><strong>Date:</strong> <span id="date-time"></span></p>
+                <p><strong>Employee:</strong> <span id="employee-name-display"></span></p>
+            </div>
+        </div>
 
-    <label>Employee Name</label>
-    <input type="text" id="employeeName" readonly>
+        <form id="estimation-form">
+            <div class="form-section">
+                <h3>Customer Details</h3>
+                <label for="customerName">Customer Name*</label>
+                <input type="text" id="customerName" required>
 
-    <label>Customer Name *</label>
-    <input type="text" id="customerName" required>
+                <label for="mobileNumber">Mobile Number</label>
+                <input type="tel" id="mobileNumber" maxlength="10">
 
-    <label>Mobile Number</label>
-    <input type="text" id="mobileNumber">
+                <label for="city">City</label>
+                <input type="text" id="city">
 
-    <label>City</label>
-    <input type="text" id="city">
+                <label for="panNumber">PAN Number</label>
+                <input type="text" id="panNumber" maxlength="10">
+            </div>
 
-    <label>PAN Number</label>
-    <input type="text" id="panNumber">
+            <div class="form-section">
+                <h3>Ornament Details</h3>
+                <label for="ornament">Ornament*</label>
+                <input type="text" id="ornament" required>
+                
+                <label for="rate">Gold Rate (per gram)*</label>
+                <input type="number" id="rate" required>
 
-    <label>Ornament *</label>
-    <input type="text" id="ornament" required>
+                <label for="quantity">Quantity (in gms)*</label>
+                <input type="number" step="0.001" id="quantity" required>
+                
+                <label>Making Charges Type*</label>
+                <div class="radio-group">
+                    <input type="radio" id="mcGrams" name="mcType" value="grams" checked>
+                    <label for="mcGrams">In Grams</label>
+                    <input type="radio" id="mcPercent" name="mcType" value="percent">
+                    <label for="mcPercent">In %</label>
+                </div>
 
-    <label>Quantity (gms) *</label>
-    <input type="number" id="quantity" required>
+                <label for="makingCharges">Making Charges*</label>
+                <input type="number" step="0.01" id="makingCharges" required>
 
-    <label>Making Charges Type *</label>
-    <div class="radio-group">
-      <input type="radio" name="mcType" value="grams" checked> In Grams
-      <input type="radio" name="mcType" value="percent"> In %
+                <label for="stoneCharges">Stone Charges (if any)</label>
+                <input type="number" step="0.01" id="stoneCharges">
+            </div>
+            
+            <div class="total-section">
+                <h3>Total Amount</h3>
+                <input type="text" id="totalAmount" readonly>
+                <small>Includes 3% GST</small>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" id="saveBtn">Save</button>
+                <button type="button" id="printBtn" disabled>Print</button>
+                <button type="button" id="restoreBtn" style="display: none;">Restore Last Entry</button>
+            </div>
+        </form>
     </div>
 
-    <label>Making Charges *</label>
-    <input type="number" id="makingCharges" required>
-
-    <label>Stone Charges</label>
-    <input type="number" id="stoneCharges">
-
-    <label>Rate (per gram)</label>
-    <input type="number" id="rate" placeholder="Enter rate">
-
-    <hr>
-    <label>Total Estimated Cost</label>
-    <input type="text" id="amount" readonly>
-
-    <div class="footer">
-      <label class="price" id="estimationId">Estimation ID: 00000</label>
-      <div>
-        <button id="saveBtn">Save</button>
-        <button id="printBtn" disabled>Print</button>
-        <button id="restoreBtn">Restore</button>
-      </div>
+    <div id="print-slip" class="print-only">
+        <img src="https://via.placeholder.com/150x50.png?text=MKS+Jewels" alt="Shop Logo" class="logo">
+        <h3>** ESTIMATION SLIP **</h3>
+        <p>--------------------------------</p>
+        <p><strong>ID:</strong> <span id="print-id"></span></p>
+        <p><strong>Date:</strong> <span id="print-date"></span></p>
+        <p><strong>Employee:</strong> <span id="print-employee"></span></p>
+        <p>--------------------------------</p>
+        <p><strong>Customer:</strong> <span id="print-customer"></span></p>
+        <p><strong>Mobile:</strong> <span id="print-mobile"></span></p>
+        <p><strong>PAN:</strong> <span id="print-pan"></span></p>
+        <p>--------------------------------</p>
+        <table>
+            <tr><td><strong>Ornament:</strong></td><td><span id="print-ornament"></span></td></tr>
+            <tr><td><strong>Gross Wt:</strong></td><td><span id="print-qty"></span> gms</td></tr>
+            <tr><td><strong>Gold Rate:</strong></td><td>₹<span id="print-rate"></span></td></tr>
+            <tr><td><strong>MC Type:</strong></td><td><span id="print-mctype"></span></td></tr>
+            <tr><td><strong>MC Value:</strong></td><td><span id="print-mcvalue"></span></td></tr>
+            <tr><td><strong>Stones:</strong></td><td>₹<span id="print-stone"></span></td></tr>
+        </table>
+        <p>================================</p>
+        <h3>TOTAL: ₹<span id="print-total"></span></h3>
+        <p><small>(Incl. 3% GST)</small></p>
+        <p>--- Thank You! ---</p>
     </div>
-  </div>
-</div>
-
-<script>
-// ====== Google Sheet Web App URL ======
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbyReHFL508_gTvriETNeS7Ah9P8H8-SUuDGlsSggssZjLRVwUn1P72qpP6uCee_n6Fw9w/exec"; // Replace with your deployed Apps Script Web App
-
-// ====== Employee from login ======
-const empName = sessionStorage.getItem('employeeName');
-if (!empName) window.location.href = 'index.html'; // redirect if not logged in
-document.getElementById('employeeName').value = empName;
-
-// ====== Generate Estimation ID ======
-const estimationId = Math.floor(10000 + Math.random() * 90000);
-document.getElementById('estimationId').textContent = "Estimation ID: " + estimationId;
-
-// ====== Calculation ======
-const quantity = document.getElementById("quantity");
-const rate = document.getElementById("rate");
-const makingCharges = document.getElementById("makingCharges");
-const stoneCharges = document.getElementById("stoneCharges");
-const amount = document.getElementById("amount");
-
-function calcTotal(){
-  const q=+quantity.value||0, r=+rate.value||0, mc=+makingCharges.value||0, s=+stoneCharges.value||0;
-  const mcType=document.querySelector('input[name="mcType"]:checked').value;
-  let t=0;
-  if(mcType==="grams") t=((q+mc)*r+s)*1.03;
-  else t=(((q+(q*(mc/100)))*r)+s)*1.03;
-  amount.value = t.toFixed(2);
-}
-
-["quantity","rate","makingCharges","stoneCharges"].forEach(id=>document.getElementById(id).addEventListener("input",calcTotal));
-document.querySelectorAll('input[name="mcType"]').forEach(r=>r.addEventListener("change",calcTotal));
-
-// ====== Buttons ======
-const saveBtn = document.getElementById("saveBtn");
-const printBtn = document.getElementById("printBtn");
-const restoreBtn = document.getElementById("restoreBtn");
-
-saveBtn.addEventListener("click", async ()=>{
-  saveBtn.textContent="Saving...";
-  const total = +amount.value||0;
-  const dataBase = {
-    id: estimationId,
-    employee: empName,
-    customer: document.getElementById("customerName").value,
-    mobile: document.getElementById("mobileNumber").value,
-    city: document.getElementById("city").value,
-    pan: document.getElementById("panNumber").value,
-    ornament: document.getElementById("ornament").value,
-    quantity: quantity.value,
-    makingCharges: makingCharges.value,
-    stoneCharges: stoneCharges.value,
-    rate: rate.value,
-    total: total,
-    date: new Date().toLocaleString()
-  };
-
-  try {
-    await fetch(SHEET_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify([dataBase])
-    });
-    saveBtn.style.display="none";
-    printBtn.disabled=false;
-    localStorage.setItem("latestEstimation", JSON.stringify(dataBase));
-    alert("Saved successfully!");
-  } catch(e){
-    alert("Error saving to Sheet: "+e);
-    saveBtn.textContent="Save";
-  }
-});
-
-printBtn.addEventListener("click", ()=> window.print());
-
-restoreBtn.addEventListener("click", ()=>{ 
-  const data=JSON.parse(localStorage.getItem("latestEstimation"));
-  if(!data) return alert("No previous record found!");
-  for(const key in data){
-    const el=document.getElementById(key);
-    if(el) el.value=data[key];
-  }
-  calcTotal();
-});
-</script>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
