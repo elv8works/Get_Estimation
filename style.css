@@ -29,7 +29,7 @@ body {
 -------------------------------------------------- */
 .form-container {
     width: 100%;
-    max-width: 800px;
+    max-width: 600px;
     background: var(--dark-charcoal);
     padding: 2.5rem 3rem;
     border-radius: 12px;
@@ -47,7 +47,7 @@ body {
 }
 
 .logo {
-    max-width: 180px;
+    max-width: 70px;
     margin-bottom: 1.5rem;
     filter: brightness(0) invert(1); /* Makes a black logo white */
 }
