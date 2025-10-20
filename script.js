@@ -270,23 +270,32 @@ showPasswordToggle.addEventListener('click', () => {
     }
     
     // Helper function to populate the hidden printable slip
+    // Helper function to populate the hidden printable slip
     function populatePrintSlip() {
         const mask = (str) => str ? 'x'.repeat(str.length - 3) + str.slice(-3) : 'N/A';
         
-        document.getElementById('print-id').textContent = document.getElementById('estimation-id').textContent;
-        document.getElementById('print-date').textContent = document.getElementById('date-time').textContent;
+        // This function now matches the IDs in your new professional print slip HTML
+        
+        // Header Info
         document.getElementById('print-employee').textContent = document.getElementById('employee-name-display').textContent;
         
+        // Main Details
         document.getElementById('print-customer').textContent = document.getElementById('customerName').value;
+        document.getElementById('print-city').textContent = document.getElementById('city').value || 'N/A'; // Added this new field
         document.getElementById('print-mobile').textContent = mask(document.getElementById('mobileNumber').value);
-        document.getElementById('print-pan').textContent = mask(document.getElementById('panNumber').value);
-        
         document.getElementById('print-ornament').textContent = document.getElementById('ornament').value;
         document.getElementById('print-qty').textContent = elements.quantity.value;
         document.getElementById('print-rate').textContent = elements.rate.value;
-        document.getElementById('print-mctype').textContent = document.querySelector('input[name="mcType"]:checked').value;
         document.getElementById('print-mcvalue').textContent = elements.makingCharges.value;
         document.getElementById('print-stone').textContent = elements.stoneCharges.value || '0';
+        
+        // Total and ID
         document.getElementById('print-total').textContent = elements.totalAmount.value;
+        document.getElementById('print-id').textContent = document.getElementById('estimation-id').textContent;
+        
+        // These IDs no longer exist in the new HTML, so they have been removed from the script:
+        // document.getElementById('print-date').textContent = ...
+        // document.getElementById('print-pan').textContent = ...
+        // document.getElementById('print-mctype').textContent = ...
     }
 }
