@@ -9,7 +9,7 @@
 <body>
     <div class="form-container">
         <div class="header">
-            <img src="kc.png" alt="Shop Logo" class="logo">
+            <img src="https://via.placeholder.com/150x60/000000/FFFFFF/?text=Your+Logo" alt="Shop Logo" class="logo">
             <h2>Estimation Slip</h2>
             <div class="meta-info">
                 <p><strong>ID:</strong> <span id="estimation-id"></span></p>
@@ -23,28 +23,30 @@
                 <h3>Customer Details</h3>
                 <label for="customerName">Customer Name*</label>
                 <input type="text" id="customerName" required>
-
                 <label for="mobileNumber">Mobile Number</label>
                 <input type="tel" id="mobileNumber" maxlength="10">
-
                 <label for="city">City</label>
                 <input type="text" id="city">
-
                 <label for="panNumber">PAN Number</label>
                 <input type="text" id="panNumber" maxlength="10">
             </div>
 
             <div class="form-section">
                 <h3>Ornament Details</h3>
-                <label for="ornament">Ornament*</label>
-                <input type="text" id="ornament" required>
+                <div class="gemini-input-group">
+                    <label for="ornament">Ornament*</label>
+                    <input type="text" id="ornament" required>
+                    <button type="button" id="gemini-btn" title="Generate description and customer note with AI">✨ Generate Details</button>
+                </div>
+                
+                <!-- New AI-powered notes section -->
+                <label for="gemini-notes">Description / Notes for Customer</label>
+                <textarea id="gemini-notes" rows="4" placeholder="Click 'Generate Details' to automatically create a description..."></textarea>
                 
                 <label for="rate">Gold Rate (per gram)*</label>
                 <input type="number" id="rate" required>
-
                 <label for="quantity">Quantity (in gms)*</label>
                 <input type="number" step="0.001" id="quantity" required>
-                
                 <label>Making Charges Type*</label>
                 <div class="radio-group">
                     <input type="radio" id="mcGrams" name="mcType" value="grams" checked>
@@ -52,10 +54,8 @@
                     <input type="radio" id="mcPercent" name="mcType" value="percent">
                     <label for="mcPercent">In %</label>
                 </div>
-
                 <label for="makingCharges">Making Charges*</label>
                 <input type="number" step="0.01" id="makingCharges" required>
-
                 <label for="stoneCharges">Stone Charges (if any)</label>
                 <input type="number" step="0.01" id="stoneCharges">
             </div>
@@ -74,81 +74,67 @@
         </form>
     </div>
 
+    <!-- Updated Print Slip with Notes Section -->
     <div id="print-slip" class="print-only">
-    <header class="print-header">
-        <img src="https://i.imgur.com/r4L9y2J.png" alt="Shop Logo" class="logo">
-        <h3>Keshava Jewellers, Sagara</h3>
-        <p>elv8.works</p>
-        <h4>Estimation Slip</h4>
-    </header>
+        <header class="print-header">
+            <h3>Keshava Jewellers, Sagara</h3>
+            <p>elv8.works</p>
+            <div class="divider"></div>
+            <h4>Estimation Slip</h4>
+            <div class="divider"></div>
+        </header>
 
-    <main class="print-main">
-        <div class="print-row">
-            <span class="label">Employee:</span>
-            <span class="filler"></span>
-            <span class="value" id="print-employee"></span>
-        </div>
-        <div class="print-row">
-            <span class="label">Customer:</span>
-            <span class="filler"></span>
-            <span class="value" id="print-customer"></span>
-        </div>
-        <div class="print-row">
-            <span class="label">City:</span>
-            <span class="filler"></span>
-            <span class="value" id="print-city"></span>
-        </div>
-        <div class="print-row">
-            <span class="label">Mobile:</span>
-            <span class="filler"></span>
-            <span class="value" id="print-mobile"></span>
-        </div>
-        <div class="print-row">
-            <span class="label">Ornament:</span>
-            <span class="filler"></span>
-            <span class="value" id="print-ornament"></span>
-        </div>
-        <div class="print-row">
-            <span class="label">Quantity:</span>
-            <span class="filler"></span>
-            <span class="value"><span id="print-qty"></span> gms</span>
-        </div>
-        <div class="print-row">
-            <span class="label">Rate:</span>
-            <span class="filler"></span>
-            <span class="value" id="print-rate"></span>
-        </div>
-        <div class="print-row">
-            <span class="label">Making Charges:</span>
-            <span class="filler"></span>
-            <span class="value" id="print-mcvalue"></span>
-        </div>
-        <div class="print-row">
-            <span class="label">Stone Charges:</span>
-            <span class="filler"></span>
-            <span class="value" id="print-stone"></span>
-        </div>
-        
-        <div class="print-row total-row">
-            <span class="label">Total Estimated Cost:</span>
-            <span class="filler"></span>
-            <span class="value">₹ <span id="print-total"></span></span>
-        </div>
+        <main class="print-main">
+             <!-- ... other print rows ... -->
+            <div class="print-row">
+                <span class="label">Employee:</span><span class="value underline" id="print-employee"></span>
+            </div>
+            <div class="print-row">
+                <span class="label">Customer:</span><span class="value underline" id="print-customer"></span>
+            </div>
+            <div class="print-row">
+                <span class="label">City:</span><span class="value underline" id="print-city"></span>
+            </div>
+            <div class="print-row">
+                <span class="label">Mobile:</span><span class="value underline" id="print-mobile"></span>
+            </div>
+            <div class="print-row">
+                <span class="label">Ornament:</span><span class="value underline" id="print-ornament"></span>
+            </div>
+            <div class="print-row">
+                <span class="label">Quantity:</span><span class="value underline"><span id="print-qty"></span> gms</span>
+            </div>
+            <div class="print-row">
+                <span class="label">Rate:</span><span class="value underline" id="print-rate"></span>
+            </div>
+            <div class="print-row">
+                <span class="label">Making Charges:</span><span class="value underline" id="print-mcvalue"></span>
+            </div>
+            <div class="print-row">
+                <span class="label">Stone Charges:</span><span class="value underline" id="print-stone"></span>
+            </div>
+            
+            <!-- Notes section added to print slip -->
+            <div class="print-notes-section">
+                <p id="print-notes"></p>
+            </div>
 
-        <div class="print-row">
-            <span class="label">Estimation ID:</span>
-            <span class="filler"></span>
-            <span class="value" id="print-id"></span>
-        </div>
-    </main>
+            <div class="print-row total-row">
+                <span class="label">Total Estimated Cost:</span><span class="value underline">₹ <span id="print-total"></span></span>
+            </div>
+            <div class="print-row">
+                <span class="label">Estimation ID:</span><span class="value underline" id="print-id"></span>
+            </div>
+        </main>
 
-    <footer class="print-footer">
-        <p>Note: This estimated cost is valid for 24 hours.</p>
-    </footer>
-</div>
+        <footer class="print-footer">
+            <p>Note: This estimated cost is valid for 24 hours.</p>
+        </footer>
+    </div>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
+
