@@ -232,7 +232,8 @@ showPasswordToggle.addEventListener('click', () => {
     // Handle Restore Button
     elements.restoreBtn.addEventListener('click', () => {
         const lastEntry = JSON.parse(localStorage.getItem('lastEntry'));
-        if(lastEntry) {
+        if (lastEntry) {
+            // --- This part is the same: Populate the form fields ---
             document.getElementById('estimation-id').textContent = lastEntry.estimationId;
             document.getElementById('customerName').value = lastEntry.customerName;
             document.getElementById('mobileNumber').value = lastEntry.mobileNumber;
@@ -245,15 +246,16 @@ showPasswordToggle.addEventListener('click', () => {
             elements.makingCharges.value = lastEntry.makingCharges;
             elements.stoneCharges.value = lastEntry.stoneCharges;
             elements.totalAmount.value = lastEntry.totalAmount;
-            
-            // Re-enable saving for the restored entry (if it needs to be re-saved)
-            elements.saveBtn.style.display = 'inline-block';
-            elements.saveBtn.textContent = 'Save';
-            elements.saveBtn.disabled = false;
-            elements.printBtn.disabled = true;
+
+            // --- THIS IS THE NEW LOGIC ---
+            // Directly enable printing for the restored entry and keep save disabled
+            elements.saveBtn.style.display = 'none'; // Hide save button
+            elements.saveBtn.disabled = true;       // Keep it disabled
+            elements.printBtn.disabled = false;      // ENABLE print button
+            elements.restoreBtn.style.display = 'none'; // Hide restore after use
         }
     });
-
+  
     // Helper function to reset the form for a new entry
     function resetForm() {
         form.reset();
@@ -269,7 +271,6 @@ showPasswordToggle.addEventListener('click', () => {
         document.getElementById('customerName').focus();
     }
     
-    // Helper function to populate the hidden printable slip
     // Helper function to populate the hidden printable slip
     function populatePrintSlip() {
         const mask = (str) => str ? 'x'.repeat(str.length - 3) + str.slice(-3) : 'N/A';
