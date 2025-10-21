@@ -265,19 +265,23 @@ button:disabled {
     display: none; 
 }
 
+/* 7. Print Styles (Final Tweaks for Centering & Page Cutoff)
+-------------------------------------------------- */
+.print-only { 
+    display: none; 
+}
+
 @media print {
-    /* === THIS IS THE NEW FIX === */
-    /* Reset body and html for printing, overriding screen styles */
     html, body {
-        width: auto;
+        width: 100%; /* Changed from auto */
         height: auto;
         min-height: 0;
-        display: block; /* Override flex or grid */
+        display: block;
         background: none;
         margin: 0;
         padding: 0;
+        overflow: hidden; /* <-- ADDED: Chops off any overflow */
     }
-    /* =========================== */
 
     body * { 
         visibility: hidden; 
@@ -287,11 +291,10 @@ button:disabled {
     }
     .print-only {
         display: block; 
-        position: absolute; /* Changed from relative to absolute */
-        left: 0;
-        top: 0;
-        width: 100%;
+        position: relative; /* <-- CHANGED: From absolute */
+        width: 80mm; /* <-- CHANGED: Fixed width */
         max-width: 80mm;
+        margin: 0 auto; /* <-- ADDED: Centers the block */
         font-family: 'Courier New', monospace;
         font-size: 10pt;
         color: #000;
