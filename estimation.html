@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Estimation Slip - Keshava Jewellers</title>
+    <title>New Estimation - Keshava Jewellers</title>
     <style>
-        /* === KESHAVA JEWELLERS - MIDNIGHT GOLD THEME (EMBEDDED) === */
+        /* === KESHAVA JEWELLERS - MOBILE-FIRST MIDNIGHT GOLD THEME === */
 
-        /* 1. Theme Variables & Global Styles
-        -------------------------------------------------- */
+        /* 1. Theme Variables & Global Styles */
         :root {
             --gold: #D4AF37;
             --dark-gold: #b98d28;
@@ -28,17 +27,14 @@
             background-color: var(--navy-dark);
             color: var(--text-light);
             margin: 0;
-            overflow-x: hidden;
+            padding: 1rem;
         }
 
-        /* 2. Main App Layout & Styles
-        -------------------------------------------------- */
+        /* 2. Main App Layout & Styles */
         .app-container {
-            display: grid;
-            grid-template-columns: 1fr 420px;
-            gap: 2rem;
-            min-height: 100vh;
-            padding: 2rem;
+            width: 100%;
+            max-width: 600px; /* Optimal for mobile and desktop viewing */
+            margin: 0 auto;
         }
 
         .form-panel { 
@@ -47,36 +43,40 @@
             border-radius: 12px; 
             border: 1px solid var(--navy-light);
         }
-        .preview-panel { 
-            display: flex; 
-            flex-direction: column; 
-        }
 
         .app-header { 
             display: flex; 
+            flex-wrap: wrap; /* Allow buttons to wrap on small screens */
             justify-content: space-between; 
             align-items: center; 
             border-bottom: 1px solid var(--navy-light); 
             padding-bottom: 1rem; 
-            margin-bottom: 1rem; 
+            margin-bottom: 1.5rem; 
+            gap: 1rem;
         }
         .app-header h2 { 
             color: var(--text-white); 
             font-weight: 500; 
             margin: 0; 
+            flex-basis: 100%; /* Title takes full width */
+            text-align: center;
         }
         .header-buttons { 
             display: flex; 
-            gap: 1rem; 
+            gap: 1rem;
+            width: 100%;
+            justify-content: space-between;
         }
         #export-btn, #logout-btn { 
             background: var(--navy-light); 
             color: var(--text-light); 
             border: none; 
-            padding: 0.5rem 1rem; 
+            padding: 0.6rem 1rem; 
             border-radius: 6px; 
             cursor: pointer; 
             transition: all 0.3s ease; 
+            font-size: 0.9rem;
+            flex-grow: 1; /* Buttons share space */
         }
         #export-btn:hover, #logout-btn:hover { 
             background: var(--gold); 
@@ -84,24 +84,23 @@
         }
 
         .gold-rate-widget { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
             background: var(--navy-dark); 
             padding: 1rem; 
             border-radius: 8px; 
             margin-bottom: 2rem; 
         }
-        .rate-display span { 
-            color: var(--text-light); 
+        .rate-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
         }
-        .rate-display strong { 
-            color: var(--gold); 
-            font-size: 1.2rem; 
-            margin-left: 0.5rem; 
+        .rate-header span {
+            font-weight: bold;
+            color: var(--text-white);
         }
-        #refresh-rate-btn { 
-            background: var(--navy-light); 
+        #refresh-rate-btn {
+             background: var(--navy-light); 
             color: var(--text-light); 
             border: none; 
             padding: 0.5rem 1rem; 
@@ -109,9 +108,33 @@
             cursor: pointer; 
             transition: all 0.3s ease; 
         }
-        #refresh-rate-btn:hover { 
-            background: var(--gold); 
-            color: var(--navy-dark); 
+        .rate-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+        }
+        .rate-entry + .rate-entry {
+            border-top: 1px solid var(--navy-light);
+        }
+        .rate-details {
+            font-size: 1.1rem;
+        }
+        .rate-details strong {
+            color: var(--gold);
+        }
+        .use-rate-btn {
+            background: transparent;
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .use-rate-btn:hover {
+            background: var(--gold);
+            color: var(--navy-dark);
         }
 
         .form-section { 
@@ -159,29 +182,27 @@
             padding-left: 25px; 
             cursor: pointer; 
         }
+        .radio-group label::before, .radio-group label::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
         .radio-group label::before { 
-            content: ''; 
-            position: absolute; 
             left: 0; 
             top: 2px; 
             width: 16px; 
             height: 16px; 
             border: 2px solid var(--navy-light); 
-            border-radius: 50%; 
-            transition: all 0.2s ease;
         }
         .radio-group label::after { 
-            content: ''; 
-            position: absolute; 
             left: 5px; 
             top: 7px; 
             width: 8px; 
             height: 8px; 
             background: var(--gold); 
-            border-radius: 50%; 
             opacity: 0; 
             transform: scale(0); 
-            transition: all 0.3s ease; 
         }
         .radio-group input:checked + label::before { 
             border-color: var(--gold); 
@@ -190,24 +211,7 @@
             opacity: 1; 
             transform: scale(1); 
         }
-
-        /* 3. Live Preview Panel Styles
-        -------------------------------------------------- */
-        .preview-panel h3 { 
-            color: var(--text-white); 
-            font-weight: 500; 
-            text-align: center; 
-            margin-top: 0; 
-        }
-        .live-receipt { 
-            background: #fdfdfd; 
-            color: #000; 
-            font-family: 'Courier New', monospace; 
-            padding: 15px; 
-            border-radius: 4px; 
-            flex-grow: 1; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
+        
         .total-display { 
             background: var(--gold); 
             color: var(--navy-dark); 
@@ -227,23 +231,24 @@
             display: grid; 
             grid-template-columns: 1fr 1fr; 
             gap: 1rem; 
-            margin-top: 1rem; 
+            margin-top: 1.5rem; 
         }
         .action-buttons button { 
             width: 100%; 
-            padding: 0.8rem; 
+            padding: 0.9rem; 
             border-radius: 6px; 
             border: none; 
             cursor: pointer; 
             transition: all 0.3s ease; 
-            font-weight: bold; 
+            font-weight: bold;
+            font-size: 1rem;
         }
         #saveBtn { 
             background: var(--gold); 
             color: var(--navy-dark); 
             grid-column: 1 / -1; /* Span full width */
         }
-        #printBtn, #restoreBtn { 
+        #printBtn, #restoreBtn, #newSlipBtn { 
             background: var(--navy-light); 
             color: var(--text-light); 
         }
@@ -253,77 +258,22 @@
             cursor: not-allowed; 
         }
 
-        /* 4. Shared Print Styles (For Live Preview & Actual Print)
-        -------------------------------------------------- */
-        .print-header, .print-main, .print-footer { 
-            color: #000; 
-            font-size: 10pt; 
-        }
-        .print-header { 
-            text-align: center; 
-            margin-bottom: 10px; 
-        }
-        .print-header h3 { 
-            font-size: 12pt; 
-            margin: 0; 
-        }
-        .print-header p, .print-header h4 { 
-            margin: 2px 0; 
-        }
-        .divider { 
-            border-bottom: 1px dashed #000; 
-            margin: 5px 0; 
-        }
-        .print-main { 
-            margin-bottom: 10px; 
-        }
-        .print-row { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: baseline; 
-            margin-bottom: 6px; 
-        }
-        .print-row .label { 
-            font-weight: bold; 
-            white-space: nowrap; 
-            padding-right: 5px; 
-        }
-        .print-row .value.underline { 
-            flex-grow: 1; 
-            text-align: right; 
-            white-space: normal; 
-        }
-        .total-row { 
-            font-weight: bold; 
-            margin-top: 10px; 
-        }
-        .print-footer { 
-            text-align: center; 
-            font-size: 8pt; 
-            border-top: 1px dashed #000; 
-            padding-top: 5px; 
-            margin-top: 10px; 
-        }
-
-        /* 5. Actual Print Media Query
-        -------------------------------------------------- */
+        /* 5. PERFECTED PRINT STYLES */
         .print-only { 
             display: none; 
         }
         @page { 
-            size: auto; 
+            size: 80mm auto; /* Set paper width, height is automatic */
             margin: 0; 
         }
         @media print {
             html, body { 
-                height: auto; 
-                min-height: 0; 
-                width: 100%; 
-                margin: 0; 
-                padding: 0; 
-                overflow: hidden; 
-                display: block; 
-                background: none; 
+                width: 80mm;
+                height: auto;
+                background: none;
+                margin: 0;
+                padding: 0;
+                overflow: visible;
             }
             body * { 
                 visibility: hidden; 
@@ -332,36 +282,54 @@
                 visibility: visible; 
             }
             .print-only { 
-                display: block; 
-                position: absolute; 
-                left: 0; 
-                top: 0; 
+                display: block;
+                position: static; /* Use static for natural flow */
+                width: 100%;
+                margin: 0;
+                padding: 5mm; /* Add some padding for the printer */
             }
+            
+            .print-header, .print-main, .print-footer { 
+                color: #000; 
+                font-family: 'Courier New', monospace;
+                font-size: 10pt; 
+            }
+            .print-header { text-align: center; margin-bottom: 10px; }
+            .print-header h3 { font-size: 12pt; margin: 0; }
+            .print-header p, .print-header h4 { margin: 2px 0; }
+            .divider { border-bottom: 1px dashed #000; margin: 5px 0; }
+            .print-main { margin-bottom: 10px; }
+            .print-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+            .print-row .label { font-weight: bold; white-space: nowrap; padding-right: 5px; }
+            .print-row .value { text-align: right; }
+            .total-row { font-weight: bold; margin-top: 10px; }
+            .print-footer { text-align: center; font-size: 8pt; border-top: 1px dashed #000; padding-top: 5px; margin-top: 10px; }
         }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Left Panel: The Form -->
         <div class="form-panel">
-            <div class="app-header">
-                <h2>New Estimation</h2>
+            <header class="app-header">
+                <h2>Keshava Jewellers</h2>
                 <div class="header-buttons">
-                    <button id="export-btn">Export as CSV (for Zoho)</button>
+                    <button id="export-btn">Export as CSV</button>
                     <button id="logout-btn">Logout</button>
                 </div>
-            </div>
+            </header>
 
-            <div class="gold-rate-widget">
-                <div class="rate-display">
-                    <span>Live Gold Rate (22k/gm):</span>
-                    <strong id="live-rate-display">₹ 0.00</strong>
+            <section class="gold-rate-widget">
+                <div class="rate-header">
+                    <span>Today's Gold Rate (/gm)</span>
+                    <button id="refresh-rate-btn">Refresh</button>
                 </div>
-                <button id="refresh-rate-btn">Refresh Rate</button>
-            </div>
+                <div id="rates-container">
+                    <!-- Gold rates will be populated here by JS -->
+                </div>
+            </section>
 
             <form id="estimation-form">
-                <div class="form-section">
+                <section class="form-section">
                     <h3>Customer Details</h3>
                     <label for="customerName">Customer Name*</label>
                     <input type="text" id="customerName" required>
@@ -371,9 +339,9 @@
                     <input type="text" id="city">
                     <label for="panNumber">PAN Number</label>
                     <input type="text" id="panNumber" maxlength="10">
-                </div>
+                </section>
 
-                <div class="form-section">
+                <section class="form-section">
                     <h3>Ornament Details</h3>
                     <label for="ornament">Ornament*</label>
                     <input type="text" id="ornament" required>
@@ -392,45 +360,17 @@
                     <input type="number" step="0.01" id="makingCharges" required>
                     <label for="stoneCharges">Stone Charges (if any)</label>
                     <input type="number" step="0.01" id="stoneCharges" value="0">
-                </div>
+                </section>
+                
+                <section class="total-display">
+                    <small>Total Estimated Cost (incl. 3% GST)</small>
+                    <strong id="final-total">₹ 0.00</strong>
+                </section>
+                
+                <section class="action-buttons">
+                    <!-- Buttons are dynamically controlled by script -->
+                </section>
             </form>
-        </div>
-
-        <!-- Right Panel: Live Preview & Actions -->
-        <div class="preview-panel">
-            <h3>Live Preview</h3>
-            <div class="live-receipt">
-                <header class="print-header">
-                    <h3>Keshava Jewellers, Sagara</h3>
-                    <p>elv8.works</p>
-                    <div class="divider"></div>
-                    <h4>Estimation Slip</h4>
-                    <div class="divider"></div>
-                </header>
-                <main class="print-main">
-                    <div class="print-row"><span class="label">Employee:</span><span class="value underline" id="preview-employee"></span></div>
-                    <div class="print-row"><span class="label">Customer:</span><span class="value underline" id="preview-customer"></span></div>
-                    <div class="print-row"><span class="label">City:</span><span class="value underline" id="preview-city"></span></div>
-                    <div class="print-row"><span class="label">Mobile:</span><span class="value underline" id="preview-mobile"></span></div>
-                    <div class="print-row"><span class="label">Ornament:</span><span class="value underline" id="preview-ornament"></span></div>
-                    <div class="print-row"><span class="label">Quantity:</span><span class="value underline" id="preview-qty"></span></div>
-                    <div class="print-row"><span class="label">Rate:</span><span class="value underline" id="preview-rate"></span></div>
-                    <div class="print-row"><span class="label">Making Charges:</span><span class="value underline" id="preview-mcvalue"></span></div>
-                    <div class="print-row"><span class="label">Stone Charges:</span><span class="value underline" id="preview-stone"></span></div>
-                    <div class="print-row total-row"><span class="label">Total Estimated Cost:</span><span class="value underline">₹ <span id="preview-total">0.00</span></span></div>
-                    <div class="print-row"><span class="label">Estimation ID:</span><span class="value underline" id="preview-id"></span></div>
-                </main>
-                <footer class="print-footer">
-                    <p>Note: This estimated cost is valid for 24 hours.</p>
-                </footer>
-            </div>
-            <div class="total-display">
-                <small>Total Amount (incl. 3% GST)</small>
-                <strong id="final-total">₹ 0.00</strong>
-            </div>
-            <div class="action-buttons">
-                <!-- Buttons are dynamically controlled by script -->
-            </div>
         </div>
     </div>
     
@@ -441,7 +381,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     
-    <!-- All JavaScript is embedded below -->
     <script>
         // =================================================================
         // ==== CONFIGURATION & API KEYS ====
@@ -453,7 +392,6 @@
           storageBucket: "mksjewels-estimator.firebasestorage.app",
           messagingSenderId: "686445291013",
           appId: "1:686445291013:web:b8783b0f050f7d1955de6c",
-          measurementId: "G-KGTDPSTGLH"
         };
 
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyC-NIj62N-QdaVysFFzctbUeu29lk-yuvajlgQNrdex95qAfDyHkgKaLsaEcaPwSHHHw/exec';
@@ -481,62 +419,76 @@
             logoutBtn: document.getElementById('logout-btn'),
             exportBtn: document.getElementById('export-btn'),
             refreshRateBtn: document.getElementById('refresh-rate-btn'),
-            liveRateDisplay: document.getElementById('live-rate-display'),
+            ratesContainer: document.getElementById('rates-container'),
             finalTotal: document.getElementById('final-total'),
             printSlipContainer: document.getElementById('print-slip'),
             actionButtons: document.querySelector('.action-buttons'),
         };
+        let estimationId = null; // To hold the current slip's ID
 
-        // --- EXTRAORDINARY FEATURE: LIVE GOLD RATE ---
+        // --- UPGRADED GOLD RATE WIDGET ---
         async function fetchGoldRate() {
-            elements.liveRateDisplay.textContent = 'Fetching...';
+            elements.ratesContainer.innerHTML = `<p style="text-align: center;">Fetching latest rates...</p>`;
             try {
-                // In a real app, you would use a real API. For this demo, we simulate a realistic price.
+                // In a real app, replace this with a real API call.
                 await new Promise(resolve => setTimeout(resolve, 800)); // Simulate network delay
-                const baseRate = 6600; // Base rate for simulation
-                const randomFluctuation = Math.random() * 100 - 50;
-                const liveRate = (baseRate + randomFluctuation).toFixed(2);
+                const base24k = 7200;
+                const randomFluctuation = Math.random() * 150 - 75;
+                const live24k = (base24k + randomFluctuation);
+                const live22k = live24k * (22/24);
+
+                const rates = [
+                    { purity: '24k', price: live24k.toFixed(2) },
+                    { purity: '22k', price: live22k.toFixed(2) },
+                ];
                 
-                elements.liveRateDisplay.textContent = `₹ ${liveRate}`;
-                elements.rate.value = liveRate;
-                updateLivePreview();
+                elements.ratesContainer.innerHTML = rates.map(rate => `
+                    <div class="rate-entry">
+                        <div class="rate-details">
+                            ${rate.purity} Gold: <strong>₹ ${rate.price}</strong>
+                        </div>
+                        <button type="button" class="use-rate-btn" data-rate="${rate.price}">Use this Rate</button>
+                    </div>
+                `).join('');
+
+                // Add event listeners to the new buttons
+                document.querySelectorAll('.use-rate-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        elements.rate.value = btn.dataset.rate;
+                        calculateTotalAndUpdateDisplay(); // Update total when rate is selected
+                    });
+                });
+
             } catch (error) {
                 console.error("Could not fetch gold rate:", error);
-                elements.liveRateDisplay.textContent = 'Error';
+                elements.ratesContainer.innerHTML = `<p style="text-align: center; color: #ff8a80;">Error fetching rates.</p>`;
             }
         }
-
-        // --- LIVE PREVIEW & CALCULATIONS ---
-        function updateLivePreview() {
-            const formData = getFormData();
-            const maskedMobile = formData.mobileNumber ? 'x'.repeat(formData.mobileNumber.length - 3) + formData.mobileNumber.slice(-3) : '';
-
-            document.getElementById('preview-employee').textContent = formData.employeeName;
-            document.getElementById('preview-customer').textContent = formData.customerName;
-            document.getElementById('preview-city').textContent = formData.city;
-            document.getElementById('preview-mobile').textContent = maskedMobile.replace(/x/g, '');
-            document.getElementById('preview-ornament').textContent = formData.ornament;
-            document.getElementById('preview-qty').textContent = `${formData.quantity} gms`;
-            document.getElementById('preview-rate').textContent = formData.rate;
-            document.getElementById('preview-mcvalue').textContent = `${formData.makingCharges} ${formData.mcType === 'grams' ? 'gms' : '%'}`;
-            document.getElementById('preview-stone').textContent = formData.stoneCharges;
-            document.getElementById('preview-id').textContent = formData.estimationId;
-            
-            const total = calculateTotal(formData);
-            document.getElementById('preview-total').textContent = total;
-            elements.finalTotal.textContent = `₹ ${total}`;
-        }
         
+        // --- CALCULATIONS & DISPLAY ---
+        function calculateTotalAndUpdateDisplay() {
+            const formData = getFormData();
+            const q = +formData.quantity, r = +formData.rate, mc = +formData.makingCharges, s = +formData.stoneCharges;
+            let t = 0;
+            if (formData.mcType === "grams") {
+                t = ((q + mc) * r + s) * 1.03;
+            } else {
+                t = (((q + (q * (mc / 100))) * r) + s) * 1.03;
+            }
+            elements.finalTotal.textContent = `₹ ${t.toFixed(2)}`;
+        }
+
+        // --- DATA HANDLING ---
         function getFormData() {
             return {
-                estimationId: document.getElementById('preview-id').textContent,
+                estimationId: estimationId,
                 employeeName: JSON.parse(userJSON).name,
                 customerName: document.getElementById('customerName').value,
                 mobileNumber: document.getElementById('mobileNumber').value,
                 city: document.getElementById('city').value,
                 panNumber: document.getElementById('panNumber').value.toUpperCase(),
                 ornament: document.getElementById('ornament').value,
-                rate: document.getElementById('rate').value || '0',
+                rate: elements.rate.value || '0',
                 quantity: document.getElementById('quantity').value || '0',
                 mcType: document.querySelector('input[name="mcType"]:checked').value,
                 makingCharges: document.getElementById('makingCharges').value || '0',
@@ -544,44 +496,27 @@
             };
         }
 
-        function calculateTotal(data) {
-            const q = +data.quantity, r = +data.rate, mc = +data.makingCharges, s = +data.stoneCharges;
-            const mcType = data.mcType;
-            let t = 0;
-            if (mcType === "grams") t = ((q + mc) * r + s) * 1.03;
-            else t = (((q + (q * (mc / 100))) * r) + s) * 1.03;
-            return t.toFixed(2);
-        }
-
-        // --- BUTTON STATE MANAGEMENT ---
+        // --- BUTTON STATE & EVENT HANDLERS ---
         function setButtonState(state) {
             elements.actionButtons.innerHTML = ''; // Clear existing buttons
             if (state === 'new') {
-                elements.actionButtons.innerHTML = `<button type="submit" id="saveBtn" form="estimation-form">Save</button>`;
+                elements.actionButtons.innerHTML = `<button type="submit" id="saveBtn" form="estimation-form">Save Estimate</button>`;
             } else if (state === 'saved') {
                 elements.actionButtons.innerHTML = `
                     <button type="button" id="printBtn">Print</button>
-                    <button type="button" id="restoreBtn" style="display: none;">Restore Last</button>
-                `;
-                document.getElementById('printBtn').addEventListener('click', handlePrint);
-            } else if (state === 'restored') {
-                 elements.actionButtons.innerHTML = `
-                    <button type="button" id="printBtn">Print Again</button>
-                    <button type="button" id="newSlipBtn">New Slip</button>
-                `;
+                    <button type="button" id="newSlipBtn">New Slip</button>`;
                 document.getElementById('printBtn').addEventListener('click', handlePrint);
                 document.getElementById('newSlipBtn').addEventListener('click', resetForm);
             }
         }
         
-        // --- EVENT HANDLERS ---
         elements.logoutBtn.addEventListener('click', () => {
             sessionStorage.removeItem('employeeUser');
             localStorage.removeItem('lastEntry');
             window.location.href = './index.html';
         });
 
-        form.addEventListener('input', updateLivePreview);
+        form.addEventListener('input', calculateTotalAndUpdateDisplay);
         elements.refreshRateBtn.addEventListener('click', fetchGoldRate);
 
         form.addEventListener('submit', (e) => {
@@ -591,7 +526,7 @@
             saveBtn.disabled = true;
 
             const formData = getFormData();
-            const totalAmount = calculateTotal(formData);
+            const totalAmount = parseFloat(elements.finalTotal.textContent.replace('₹ ', '')).toFixed(2);
             const dataToSave = { ...formData, totalAmount };
 
             localStorage.setItem('lastEntry', JSON.stringify(dataToSave));
@@ -600,67 +535,63 @@
                 method: 'POST', mode: 'no-cors', cache: 'no-cache',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dataToSave)
-            })
-            .then(() => {
+            }).then(() => {
                 setButtonState('saved');
                 alert('Estimation saved successfully!');
-            })
-            .catch(error => {
+            }).catch(error => {
                 console.error('Error:', error);
                 alert('Failed to save estimation.');
-                saveBtn.textContent = 'Save';
+                saveBtn.textContent = 'Save Estimate';
                 saveBtn.disabled = false;
             });
         });
         
         function handlePrint() {
-            const liveReceiptHTML = document.querySelector('.live-receipt').innerHTML;
-            elements.printSlipContainer.innerHTML = liveReceiptHTML;
+            populatePrintSlip(getFormData());
             window.print();
-            
-            // After printing, show restore button
-            setTimeout(() => {
-                resetForm();
-                const restoreBtn = document.createElement('button');
-                restoreBtn.id = 'restoreBtn';
-                restoreBtn.textContent = 'Restore Last';
-                elements.actionButtons.appendChild(restoreBtn);
-                restoreBtn.addEventListener('click', handleRestore);
-            }, 500);
         }
 
-        function handleRestore() {
-            const lastEntry = JSON.parse(localStorage.getItem('lastEntry'));
-            if (lastEntry) {
-                document.getElementById('customerName').value = lastEntry.customerName;
-                document.getElementById('mobileNumber').value = lastEntry.mobileNumber;
-                document.getElementById('city').value = lastEntry.city;
-                document.getElementById('panNumber').value = lastEntry.panNumber;
-                document.getElementById('ornament').value = lastEntry.ornament;
-                document.getElementById('rate').value = lastEntry.rate;
-                document.getElementById('quantity').value = lastEntry.quantity;
-                document.querySelector(`input[name="mcType"][value="${lastEntry.mcType}"]`).checked = true;
-                document.getElementById('makingCharges').value = lastEntry.makingCharges;
-                document.getElementById('stoneCharges').value = lastEntry.stoneCharges;
-                document.getElementById('preview-id').textContent = lastEntry.estimationId;
-                
-                updateLivePreview();
-                setButtonState('restored');
-            }
+        function populatePrintSlip(data) {
+            const maskedMobile = data.mobileNumber ? 'x'.repeat(data.mobileNumber.length - 3) + data.mobileNumber.slice(-3) : '';
+            const total = parseFloat(elements.finalTotal.textContent.replace('₹ ', '')).toFixed(2);
+            
+            const slipHTML = `
+                <div class="print-header">
+                    <h3>Keshava Jewellers, Sagara</h3>
+                    <p>elv8.works</p>
+                    <div class="divider"></div>
+                    <h4>Estimation Slip</h4>
+                    <div class="divider"></div>
+                </div>
+                <div class="print-main">
+                    <div class="print-row"><span class="label">Employee:</span><span class="value">${data.employeeName}</span></div>
+                    <div class="print-row"><span class="label">Customer:</span><span class="value">${data.customerName}</span></div>
+                    <div class="print-row"><span class="label">City:</span><span class="value">${data.city}</span></div>
+                    <div class="print-row"><span class="label">Mobile:</span><span class="value">${maskedMobile.replace(/x/g, '')}</span></div>
+                    <div class="print-row"><span class="label">Ornament:</span><span class="value">${data.ornament}</span></div>
+                    <div class="print-row"><span class="label">Quantity:</span><span class="value">${data.quantity} gms</span></div>
+                    <div class="print-row"><span class="label">Rate:</span><span class="value">${data.rate}</span></div>
+                    <div class="print-row"><span class="label">Making Charges:</span><span class="value">${data.makingCharges} ${data.mcType === 'grams' ? 'gms' : '%'}</span></div>
+                    <div class="print-row"><span class="label">Stone Charges:</span><span class="value">${data.stoneCharges}</span></div>
+                    <div class="print-row total-row"><span class="label">Total Estimated Cost:</span><span class="value">₹ ${total}</span></div>
+                    <div class="print-row"><span class="label">Estimation ID:</span><span class="value">${data.estimationId}</span></div>
+                </div>
+                <div class="print-footer">
+                    <p>Note: This estimated cost is valid for 24 hours.</p>
+                </div>
+            `;
+            elements.printSlipContainer.innerHTML = slipHTML;
         }
 
         elements.exportBtn.addEventListener('click', () => {
             const data = getFormData();
-            const total = calculateTotal(data);
-            
+            const total = parseFloat(elements.finalTotal.textContent.replace('₹ ', '')).toFixed(2);
             const headers = ["Estimation ID", "Date", "Employee", "Customer", "Mobile", "City", "PAN", "Ornament", "Quantity (gms)", "Rate", "MC Type", "MC Value", "Stone Charges", "Total Amount"];
             const values = [
                 data.estimationId, new Date().toLocaleDateString('en-IN'), data.employeeName, data.customerName, data.mobileNumber, data.city, data.panNumber,
                 data.ornament, data.quantity, data.rate, data.mcType, data.makingCharges, data.stoneCharges, total
             ];
-
-            let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + values.map(e => `"${e}"`).join(","); // Encapsulate values in quotes
-            
+            let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + values.map(e => `"${e}"`).join(",");
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
@@ -672,10 +603,10 @@
       
         function resetForm() {
             form.reset();
-            document.getElementById('preview-id').textContent = Math.floor(10000 + Math.random() * 90000);
+            estimationId = Math.floor(10000 + Math.random() * 90000);
             document.getElementById('customerName').focus();
             setButtonState('new');
-            updateLivePreview();
+            calculateTotalAndUpdateDisplay();
             fetchGoldRate();
         }
 
