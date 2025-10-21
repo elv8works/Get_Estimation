@@ -259,7 +259,26 @@ button:disabled {
     display: none; 
 }
 
+/* 7. Print Styles (FIXED: Removes blank pages)
+-------------------------------------------------- */
+.print-only { 
+    display: none; 
+}
+
 @media print {
+    /* === THIS IS THE NEW FIX === */
+    /* Reset body and html for printing, overriding screen styles */
+    html, body {
+        width: auto;
+        height: auto;
+        min-height: 0;
+        display: block; /* Override flex or grid */
+        background: none;
+        margin: 0;
+        padding: 0;
+    }
+    /* =========================== */
+
     body * { 
         visibility: hidden; 
     }
@@ -268,7 +287,7 @@ button:disabled {
     }
     .print-only {
         display: block; 
-        position: absolute;
+        position: absolute; /* Changed from relative to absolute */
         left: 0;
         top: 0;
         width: 100%;
@@ -276,42 +295,42 @@ button:disabled {
         font-family: 'Courier New', monospace;
         font-size: 10pt;
         color: #000;
-        padding: 0 5px; /* Removed top/bottom padding */
+        padding: 0 5px;
         box-sizing: border-box;
     }
     
     .print-header {
         text-align: center;
-        margin-bottom: 10px; /* Reduced space */
+        margin-bottom: 10px;
     }
 
     .print-header h3 { 
-        font-size: 12pt; /* Slightly smaller */
-        margin: 0 0 2px 0; /* No top margin */
+        font-size: 12pt;
+        margin: 0 0 2px 0;
     }
     .print-header p { 
         font-size: 9pt; 
-        margin: 0 0 8px 0; /* Reduced space */
+        margin: 0 0 8px 0;
     }
     .print-header h4 {
         font-size: 11pt;
-        margin: 8px 0; /* Reduced space */
+        margin: 8px 0;
     }
 
     .divider {
-        border-bottom: 1px dashed #000; /* Thinner line */
-        margin: 5px 0; /* Reduced space */
+        border-bottom: 1px dashed #000;
+        margin: 5px 0;
     }
 
     .print-main {
-        margin-bottom: 10px; /* Reduced space */
+        margin-bottom: 10px;
     }
 
     .print-row {
         display: flex;
         justify-content: space-between;
         align-items: baseline;
-        margin-bottom: 6px; /* Reduced line spacing */
+        margin-bottom: 6px;
         line-height: 1.1;
     }
 
@@ -334,15 +353,15 @@ button:disabled {
     .total-row {
         font-weight: bold;
         font-size: 11pt;
-        margin-top: 10px; /* Reduced space */
-        margin-bottom: 10px; /* Reduced space */
+        margin-top: 10px;
+        margin-bottom: 10px;
     }
 
     .print-footer {
         text-align: center;
-        font-size: 8pt; /* Smaller note text */
+        font-size: 8pt;
         border-top: 1px dashed #000;
-        padding-top: 5px; /* Reduced space */
-        margin-top: 10px; /* Reduced space */
+        padding-top: 5px;
+        margin-top: 10px;
     }
 }
