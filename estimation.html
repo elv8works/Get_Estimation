@@ -272,22 +272,26 @@
     margin-bottom: 4px;
   }
 
-  .print-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 4px;
-    line-height: 1.2;
-  }
+    .print-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;       /* ✅ Align text perfectly in one line */
+      border-bottom: 1px solid #000; /* ✅ Add underline for each row */
+      padding: 2px 0;            /* ✅ Proper vertical spacing */
+      font-size: 9pt;
+    }
+    
+    .print-row .label {
+      font-weight: bold;
+      white-space: nowrap;
+      flex: 1;
+    }
+    
+    .print-row .value {
+      text-align: right;
+      flex: 1;
+    }
 
-  .print-row .label {
-    font-weight: bold;
-    white-space: nowrap;
-  }
-
-  .print-row .value {
-    text-align: right;
-    word-break: break-all;
-  }
 
   .total-row {
     font-weight: bold;
