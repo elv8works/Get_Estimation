@@ -213,7 +213,7 @@
             margin: 0; /* No printer-level margins */
         }
 
-        @media print {
+  @media print {
   @page {
     size: 80mm auto;    /* exact width for 3-inch paper */
     margin: 0;
@@ -241,10 +241,12 @@
   /* ==== PRINT SLIP STYLES ==== */
   #print-slip {
     width: 100%;
+    max-width: 80mm;    /* ensure it fits the paper width */
+    margin: 0 auto;     /* center slip on page */
     padding: 2.8mm;
     box-sizing: border-box;
     font-family: 'Courier New', monospace;
-    font-size: 9pt; /* slightly smaller to fit more text */
+    font-size: 9pt;
     color: #000;
   }
 
@@ -272,26 +274,25 @@
     margin-bottom: 4px;
   }
 
-    .print-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;       /* ✅ Align text perfectly in one line */
-      border-bottom: 1px solid #000; /* ✅ Add underline for each row */
-      padding: 2px 0;            /* ✅ Proper vertical spacing */
-      font-size: 9pt;
-    }
-    
-    .print-row .label {
-      font-weight: bold;
-      white-space: nowrap;
-      flex: 1;
-    }
-    
-    .print-row .value {
-      text-align: right;
-      flex: 1;
-    }
+  .print-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;          /* Align text perfectly in one line */
+    border-bottom: 1px solid #000; /* Underline for each row */
+    padding: 2px 0;               /* Proper vertical spacing */
+    font-size: 9pt;
+  }
 
+  .print-row .label {
+    font-weight: bold;
+    white-space: nowrap;
+    flex: 1;
+  }
+
+  .print-row .value {
+    text-align: right;
+    flex: 1;
+  }
 
   .total-row {
     font-weight: bold;
@@ -306,10 +307,11 @@
     padding-top: 2px;
   }
 
-  #print-slip { 
-    page-break-after: avoid; 
+  #print-slip {
+    page-break-after: avoid;
   }
 }
+
 
     </style>
 </head>
