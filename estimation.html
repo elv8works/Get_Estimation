@@ -215,7 +215,7 @@
 
         @media print {
   @page {
-    size: 80mm auto;
+    size: 80mm auto;    /* exact width for 3-inch paper */
     margin: 0;
   }
 
@@ -223,41 +223,88 @@
     width: 80mm;
     margin: 0;
     padding: 0;
-    background: #fff;
+    background: #fff !important;
   }
 
-  /* Hide everything else completely */
+  /* Hide everything else on the page completely */
   body * {
     display: none !important;
   }
 
-  /* Show only the slip */
-  #print-slip {
+  /* Show ONLY the print slip container and its contents */
+  #print-slip,
+  #print-slip * {
     display: block !important;
-    width: 80mm;
-    padding: 5mm;
+    visibility: visible !important;
+  }
+
+  /* ==== PRINT SLIP STYLES ==== */
+  #print-slip {
+    width: 100%;
+    padding: 4mm;
     box-sizing: border-box;
     font-family: 'Courier New', monospace;
-    font-size: 10pt;
+    font-size: 9pt; /* slightly smaller to fit more text */
     color: #000;
   }
 
-  /* Slip content styling */
   .print-header, .print-main, .print-footer {
     display: block;
     width: 100%;
   }
 
-  .print-header { text-align: center; margin-bottom: 6px; }
-  .print-header h3 { font-size: 12pt; margin: 0; }
-  .divider { border-bottom: 1px dashed #000; margin: 4px 0; }
+  .print-header {
+    text-align: center;
+    margin-bottom: 6px;
+  }
 
-  .print-main { margin-bottom: 6px; }
-  .print-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
-  .print-row .label { font-weight: bold; }
-  .total-row { font-weight: bold; margin-top: 6px; }
+  .print-header h3 {
+    font-size: 11pt;
+    margin: 0;
+  }
 
-  .print-footer { text-align: center; font-size: 8pt; margin-top: 8px; border-top: 1px dashed #000; padding-top: 4px; }
+  .divider {
+    border-bottom: 1px dashed #000;
+    margin: 4px 0;
+  }
+
+  .print-main {
+    margin-bottom: 6px;
+  }
+
+  .print-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+
+  .print-row .label {
+    font-weight: bold;
+    white-space: nowrap;
+  }
+
+  .print-row .value {
+    text-align: right;
+    word-break: break-all;
+  }
+
+  .total-row {
+    font-weight: bold;
+    margin-top: 6px;
+  }
+
+  .print-footer {
+    text-align: center;
+    font-size: 7.5pt;
+    margin-top: 8px;
+    border-top: 1px dashed #000;
+    padding-top: 4px;
+  }
+
+  #print-slip { 
+    page-break-after: avoid; 
+  }
 }
 
     </style>
