@@ -226,9 +226,16 @@
                 <label for="password">Password</label>
                 <input type="password" id="password" required>
                 <span id="show-password-toggle">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <!-- Eye Icon (Visible by default) -->
+                    <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                         <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
                         <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                    </svg>
+                    <!-- Eye Slash Icon (Hidden by default) -->
+                    <svg id="eye-slash-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A3.5 3.5 0 0 1 8 4.5c2.12 0 3.879 1.168 5.168 2.457L13.359 11.238zM.05 3.57A2 2 0 0 0 .051 3.571L2.83 6.35a3.5 3.5 0 0 0 4.474 4.474l.71.71C6.278 11.062 3.91 12.5 3 12.5s-3-1-3-1L.65 11.238a2 2 0 0 1 0-2.472L.05 3.57zM8 5.5a2.5 2.5 0 0 0-2.5 2.5l2.5-2.5zM12.94 6.588l-2.829-2.828-2.828 2.829a2.5 2.5 0 0 1 2.829 2.829l2.828-2.829z"/>
+                        <path d="M10.79 12.912l-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7.029 7.029 0 0 0 2.79-.588zM5.21 3.088A7.028 7.028 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474L5.21 3.089z"/>
+                        <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829l-2.83-2.829zm4.95.708l-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12-.708.708z"/>
                     </svg>
                 </span>
             </div>
@@ -328,12 +335,19 @@
         });
 
         showPasswordToggle.addEventListener('click', () => {
+            const eyeIcon = document.getElementById('eye-icon');
+            const eyeSlashIcon = document.getElementById('eye-slash-icon');
+            
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
                 characterContainer.classList.add('peeking');
+                eyeIcon.style.display = 'none';
+                eyeSlashIcon.style.display = 'none';
             } else {
                 passwordInput.type = 'password';
                 characterContainer.classList.remove('peeking');
+                eyeIcon.style.display = 'block';
+                eyeSlashIcon.style.display = 'block';
             }
         });
 
