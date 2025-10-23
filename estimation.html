@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Estimation - Keshava Jewellers</title>
+    <title>Keshava Jewellers</title>
     <style>
         /* === KESHAVA JEWELLERS - MOBILE-FIRST MIDNIGHT GOLD THEME === */
 
@@ -46,7 +46,7 @@
 
         .app-header { 
             display: flex; 
-            flex-wrap: wrap; /* Allow buttons to wrap on small screens */
+            flex-wrap: wrap;
             justify-content: space-between; 
             align-items: center; 
             border-bottom: 1px solid var(--navy-light); 
@@ -58,16 +58,16 @@
             color: var(--text-white); 
             font-weight: 500; 
             margin: 0; 
-            flex-basis: 100%; /* Title takes full width */
+            flex-basis: 100%; 
             text-align: center;
         }
         .header-buttons { 
             display: flex; 
             gap: 1rem;
-            width: 40%;
-            justify-content: right;
+            width: 100%;
+            justify-content: flex-end; /* Aligned logout to the right */
         }
-        #export-btn, #logout-btn { 
+        #logout-btn { 
             background: var(--navy-light); 
             color: var(--text-light); 
             border: none; 
@@ -76,65 +76,10 @@
             cursor: pointer; 
             transition: all 0.3s ease; 
             font-size: 0.9rem;
-            flex-grow: 1; /* Buttons share space */
         }
-        #export-btn:hover, #logout-btn:hover { 
+        #logout-btn:hover { 
             background: var(--gold); 
             color: var(--navy-dark); 
-        }
-
-        .gold-rate-widget { 
-            background: var(--navy-dark); 
-            padding: 1rem; 
-            border-radius: 8px; 
-            margin-bottom: 2rem; 
-        }
-        .rate-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-        .rate-header span {
-            font-weight: bold;
-            color: var(--text-white);
-        }
-        #refresh-rate-btn {
-             background: var(--navy-light); 
-            color: var(--text-light); 
-            border: none; 
-            padding: 0.5rem 1rem; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            transition: all 0.3s ease; 
-        }
-        .rate-entry {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem 0;
-        }
-        .rate-entry + .rate-entry {
-            border-top: 1px solid var(--navy-light);
-        }
-        .rate-details {
-            font-size: 1.1rem;
-        }
-        .rate-details strong {
-            color: var(--gold);
-        }
-        .use-rate-btn {
-            background: transparent;
-            color: var(--gold);
-            border: 1px solid var(--gold);
-            padding: 0.4rem 0.8rem;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .use-rate-btn:hover {
-            background: var(--gold);
-            color: var(--navy-dark);
         }
 
         .form-section { 
@@ -258,37 +203,41 @@
             cursor: not-allowed; 
         }
 
-        /* 5. PERFECTED PRINT STYLES */
+        /* 5. PERFECTED PRINT STYLES - THIS SECTION IS NOW CORRECTED */
         .print-only { 
-            display: none; 
+            display: none; /* Hide on screen */
         }
+
         @page { 
             size: 80mm auto; /* Set paper width, height is automatic */
-            margin: 0; 
+            margin: 0; /* No printer-level margins */
         }
+
         @media print {
             html, body { 
-                width: 80mm;
+                width: 80mm; /* Force the body to be the width of the paper */
                 height: auto;
                 background: none;
                 margin: 0;
                 padding: 0;
-                overflow: visible;
+                overflow: visible; /* Show all content */
             }
             body * { 
-                visibility: hidden; 
+                visibility: hidden; /* Hide everything on the page */
             }
             .print-only, .print-only * { 
-                visibility: visible; 
+                visibility: visible; /* Show ONLY the print slip and its children */
             }
             .print-only { 
                 display: block;
-                position: static; /* Use static for natural flow */
-                width: 100%;
-                margin: 0;
-                padding: 5mm; /* Add some padding for the printer */
+                position: static;
+                width: 100%; /* Fill the 80mm body */
+                margin: 0; /* No margins on the slip itself */
+                padding: 5mm; /* Internal padding so content isn't cut off */
+                box-sizing: border-box; /* Include padding in the width */
             }
             
+            /* All your existing, correct styles for the slip's content */
             .print-header, .print-main, .print-footer { 
                 color: #000; 
                 font-family: 'Courier New', monospace;
@@ -301,7 +250,7 @@
             .print-main { margin-bottom: 10px; }
             .print-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
             .print-row .label { font-weight: bold; white-space: nowrap; padding-right: 5px; }
-            .print-row .value { text-align: right; }
+            .print-row .value { text-align: right; word-break: break-all; }
             .total-row { font-weight: bold; margin-top: 10px; }
             .print-footer { text-align: center; font-size: 8pt; border-top: 1px dashed #000; padding-top: 5px; margin-top: 10px; }
         }
@@ -313,20 +262,11 @@
             <header class="app-header">
                 <h2>Keshava Jewellers</h2>
                 <div class="header-buttons">
-                    <!-- <button id="export-btn">Export as CSV</button> -->
                     <button id="logout-btn">Logout</button>
                 </div>
             </header>
 
-            <!-- <section class="gold-rate-widget">
-                <div class="rate-header">
-                    <span>Today's Gold Rate (/gm)</span>
-                    <button id="refresh-rate-btn">Refresh</button>
-                </div>
-                <div id="rates-container">
-                    
-                </div>
-            </section> -->
+            <!-- Gold Rate Widget and Export Button have been removed -->
 
             <form id="estimation-form">
                 <section class="form-section">
@@ -363,7 +303,7 @@
                 </section>
                 
                 <section class="total-display">
-                    <small>Total Estimated Cost (incl. 3% GST)</small>
+                    <small>Total Amount (incl. 3% GST)</small>
                     <strong id="final-total">₹ 0.00</strong>
                 </section>
                 
@@ -397,7 +337,7 @@
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyC-NIj62N-QdaVysFFzctbUeu29lk-yuvajlgQNrdex95qAfDyHkgKaLsaEcaPwSHHHw/exec';
 
         // =================================================================
-        // =================== APPLICATION LOGIC ===================
+        // =================== APPLICATION LOGIC (SIMPLIFIED) ===================
         // =================================================================
 
         firebase.initializeApp(firebaseConfig);
@@ -415,56 +355,13 @@
         // --- DOM ELEMENT SELECTORS ---
         const form = document.getElementById('estimation-form');
         const elements = {
-            rate: document.getElementById('rate'),
             logoutBtn: document.getElementById('logout-btn'),
-            exportBtn: document.getElementById('export-btn'),
-            refreshRateBtn: document.getElementById('refresh-rate-btn'),
-            ratesContainer: document.getElementById('rates-container'),
             finalTotal: document.getElementById('final-total'),
             printSlipContainer: document.getElementById('print-slip'),
             actionButtons: document.querySelector('.action-buttons'),
         };
         let estimationId = null; // To hold the current slip's ID
 
-        // --- UPGRADED GOLD RATE WIDGET ---
-        async function fetchGoldRate() {
-            elements.ratesContainer.innerHTML = `<p style="text-align: center;">Fetching latest rates...</p>`;
-            try {
-                // In a real app, replace this with a real API call.
-                await new Promise(resolve => setTimeout(resolve, 800)); // Simulate network delay
-                const base24k = 7200;
-                const randomFluctuation = Math.random() * 150 - 75;
-                const live24k = (base24k + randomFluctuation);
-                const live22k = live24k * (22/24);
-
-                const rates = [
-                    { purity: '24k', price: live24k.toFixed(2) },
-                    { purity: '22k', price: live22k.toFixed(2) },
-                ];
-                
-                elements.ratesContainer.innerHTML = rates.map(rate => `
-                    <div class="rate-entry">
-                        <div class="rate-details">
-                            ${rate.purity} Gold: <strong>₹ ${rate.price}</strong>
-                        </div>
-                        <button type="button" class="use-rate-btn" data-rate="${rate.price}">Use this Rate</button>
-                    </div>
-                `).join('');
-
-                // Add event listeners to the new buttons
-                document.querySelectorAll('.use-rate-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        elements.rate.value = btn.dataset.rate;
-                        calculateTotalAndUpdateDisplay(); // Update total when rate is selected
-                    });
-                });
-
-            } catch (error) {
-                console.error("Could not fetch gold rate:", error);
-                elements.ratesContainer.innerHTML = `<p style="text-align: center; color: #ff8a80;">Error fetching rates.</p>`;
-            }
-        }
-        
         // --- CALCULATIONS & DISPLAY ---
         function calculateTotalAndUpdateDisplay() {
             const formData = getFormData();
@@ -488,7 +385,7 @@
                 city: document.getElementById('city').value,
                 panNumber: document.getElementById('panNumber').value.toUpperCase(),
                 ornament: document.getElementById('ornament').value,
-                rate: elements.rate.value || '0',
+                rate: document.getElementById('rate').value || '0',
                 quantity: document.getElementById('quantity').value || '0',
                 mcType: document.querySelector('input[name="mcType"]:checked').value,
                 makingCharges: document.getElementById('makingCharges').value || '0',
@@ -496,14 +393,27 @@
             };
         }
 
-        // --- BUTTON STATE & EVENT HANDLERS ---
+        // --- NEW SIMPLIFIED BUTTON STATE & EVENT HANDLERS ---
         function setButtonState(state) {
             elements.actionButtons.innerHTML = ''; // Clear existing buttons
+            
             if (state === 'new') {
                 elements.actionButtons.innerHTML = `<button type="submit" id="saveBtn" form="estimation-form">Save Estimate</button>`;
+            
             } else if (state === 'saved') {
+                elements.actionButtons.innerHTML = `<button type="button" id="printBtn">Print</button>`;
+                document.getElementById('printBtn').addEventListener('click', handlePrint);
+
+            } else if (state === 'printed') {
                 elements.actionButtons.innerHTML = `
-                    <button type="button" id="printBtn">Print</button>
+                    <button type="button" id="newSlipBtn">New Slip</button>
+                    <button type="button" id="restoreBtn">Restore Last Entry</button>`;
+                document.getElementById('newSlipBtn').addEventListener('click', resetForm);
+                document.getElementById('restoreBtn').addEventListener('click', handleRestore);
+
+            } else if (state === 'restored') {
+                elements.actionButtons.innerHTML = `
+                    <button type="button" id="printBtn">Print Restored</D>
                     <button type="button" id="newSlipBtn">New Slip</button>`;
                 document.getElementById('printBtn').addEventListener('click', handlePrint);
                 document.getElementById('newSlipBtn').addEventListener('click', resetForm);
@@ -517,7 +427,6 @@
         });
 
         form.addEventListener('input', calculateTotalAndUpdateDisplay);
-        elements.refreshRateBtn.addEventListener('click', fetchGoldRate);
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -536,7 +445,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dataToSave)
             }).then(() => {
-                setButtonState('saved');
+                setButtonState('saved'); // Go to 'saved' state
                 alert('Estimation saved successfully!');
             }).catch(error => {
                 console.error('Error:', error);
@@ -549,6 +458,32 @@
         function handlePrint() {
             populatePrintSlip(getFormData());
             window.print();
+            setButtonState('printed'); // Go to 'printed' state after print
+        }
+
+        function handleRestore() {
+            const lastEntry = JSON.parse(localStorage.getItem('lastEntry'));
+            if (lastEntry) {
+                populateForm(lastEntry);
+                calculateTotalAndUpdateDisplay(); // Update total display
+                setButtonState('restored'); // Go to 'restored' state
+            } else {
+                alert("No entry to restore.");
+            }
+        }
+        
+        function populateForm(data) {
+            estimationId = data.estimationId; // Restore the ID
+            document.getElementById('customerName').value = data.customerName;
+            document.getElementById('mobileNumber').value = data.mobileNumber;
+            document.getElementById('city').value = data.city;
+            document.getElementById('panNumber').value = data.panNumber;
+            document.getElementById('ornament').value = data.ornament;
+            document.getElementById('rate').value = data.rate;
+            document.getElementById('quantity').value = data.quantity;
+            document.querySelector(`input[name="mcType"][value="${data.mcType}"]`).checked = true;
+            document.getElementById('makingCharges').value = data.makingCharges;
+            document.getElementById('stoneCharges').value = data.stoneCharges;
         }
 
         function populatePrintSlip(data) {
@@ -582,32 +517,14 @@
             `;
             elements.printSlipContainer.innerHTML = slipHTML;
         }
-
-        elements.exportBtn.addEventListener('click', () => {
-            const data = getFormData();
-            const total = parseFloat(elements.finalTotal.textContent.replace('₹ ', '')).toFixed(2);
-            const headers = ["Estimation ID", "Date", "Employee", "Customer", "Mobile", "City", "PAN", "Ornament", "Quantity (gms)", "Rate", "MC Type", "MC Value", "Stone Charges", "Total Amount"];
-            const values = [
-                data.estimationId, new Date().toLocaleDateString('en-IN'), data.employeeName, data.customerName, data.mobileNumber, data.city, data.panNumber,
-                data.ornament, data.quantity, data.rate, data.mcType, data.makingCharges, data.stoneCharges, total
-            ];
-            let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + values.map(e => `"${e}"`).join(",");
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Estimation_${data.estimationId}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
       
         function resetForm() {
             form.reset();
             estimationId = Math.floor(10000 + Math.random() * 90000);
             document.getElementById('customerName').focus();
-            setButtonState('new');
+            setButtonState('new'); // Set to initial 'new' state
             calculateTotalAndUpdateDisplay();
-            fetchGoldRate();
+            // fetchGoldRate() removed
         }
 
         // --- INITIALIZE APP ---
